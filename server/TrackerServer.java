@@ -13,6 +13,8 @@
 //stats
 
 import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.*;
 
 public class TrackerServer {
@@ -24,7 +26,7 @@ public class TrackerServer {
 	protected static int threadPoolSize = 5;
 	protected static int serverPort = 6789;
 
-	protected static HashMap<String,ArrayList<InetAddress>> map;
+	protected static HashMap<String,ArrayList<NodeID>> map;
 
 	public static void main(String[] args) throws Exception {
 		serverPort = Integer.parseInt(args[1]);
@@ -34,7 +36,7 @@ public class TrackerServer {
     private static void StartSequentialServer() throws Exception {
         while(true) {
             // accept connection from connection queue
-            Socket connectionSocket = welcomeSocket.accept();
+            Socket connSocket = welcomeSocket.accept();
             
            	BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream(), enc));
             String line = inFromClient.readLine();
@@ -42,14 +44,14 @@ public class TrackerServer {
 	        while (!(line == "")) {
 	        	//SEED request
 	        	String[] pair = line.split(" ");
-	        	if(pairs[0].equals("SEED")) {
+	        	if(pair[0].equals("SEED")) {
 	        		//add node's InetAddress
-	        		ArrayList<NodeID> list = map.get(pairs[1]);
-	        		NodeID id = new NodeID(connectionSocket.getInetAddress(), connectionSocket.getPort());
+	        		ArrayList<NodeID> list = map.get(pair[1]);
+	        		NodeID id = new NodeID(connSocket.getInetAddress(), connSocket.getPort());
 	        		if(list == null) {
 	        			list = new ArrayList<NodeID>();
 	        			list.add(id);
-						map.put(pairs[1],list);
+						map.put(pair[1],list);
 	        		}
 	        		else {
 	        			list.add(id);
