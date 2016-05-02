@@ -11,4 +11,9 @@ public class NodeID {
 		this.ip = ip;
 		this.port = port;
 	}
+
+    public boolean equals(Object o) {
+        NodeID temp = (NodeID) o;
+        return temp.ip.equals(ip) && temp.port == port;
+    }
 }
