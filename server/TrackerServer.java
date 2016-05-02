@@ -30,6 +30,8 @@ public class TrackerServer {
 
 	public static void main(String[] args) throws Exception {
 		serverPort = Integer.parseInt(args[1]);
+		//create listening socket on port
+		welcomeSocket = new ServerSocket(serverPort);
 		StartSequentialServer();
 	}	
 
