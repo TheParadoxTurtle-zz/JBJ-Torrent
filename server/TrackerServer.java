@@ -46,22 +46,28 @@ public class TrackerServer {
 	        while (!(line == "")) {
 	        	//SEED request
 	        	String[] pair = line.split(" ");
+	        	
 	        	if(pair[0].equals("SEED")) {
-	        		//add node's InetAddress
-	        		ArrayList<NodeID> list = map.get(pair[1]);
-	        		NodeID id = new NodeID(connSocket.getInetAddress(), connSocket.getPort());
-	        		if(list == null) {
-	        			list = new ArrayList<NodeID>();
-	        			list.add(id);
-						map.put(pair[1],list);
-	        		}
-	        		else {
-	        			list.add(id);
-	        		}
+	        		handleSEED(connSocket, pair[1]);
 	        	}
+	        	
 		        line = inFromClient.readLine();
 	        }
         }
+    }
+    
+    private static void handleSEED(Socket connSocket, String fileName) {
+    	//add node's InetAddress
+		ArrayList<NodeID> list = map.get(fileName);
+		NodeID id = new NodeID(connSocket.getInetAddress(), connSocket.getPort());
+		if(list == null) {
+			list = new ArrayList<NodeID>();
+			list.add(id);
+			map.put(fileName,list);
+		}
+		else {
+			list.add(id);
+		}
     }
 }
 
