@@ -77,7 +77,6 @@ public class ClientNode implements Node {
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			
-			
 			InputStream is = connSocket.getInputStream();
 			BufferedReader br = new BufferedReader (new InputStreamReader(is, "US-ASCII"));
 			String line = br.readLine();
@@ -116,8 +115,11 @@ public class ClientNode implements Node {
 		return false;
 	}
 
-	public boolean[] connect(Neighbor neighbor, String fileName) {
+	public void connect(Neighbor neighbor, String fileName) {
 		try {
+            if(neighbor.bitmap != null)
+                return;
+
 			Socket connSocket = new Socket(server_ip, server_port);
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
@@ -126,18 +128,8 @@ public class ClientNode implements Node {
 			outToClient.write(message.getBytes("US-ASCII"));
 			
 			// Timeout Event
-	        iCallback callback = new iCallback() {
-	        	public void call() {
-	        		try {
-	        			if (!connSocket.isClosed()) {
-	        				connSocket.close();
-	        			}
-	        		}
-	        		catch (Exception e) {
-	        			
-	        		}
-	        	}
-	        };
+	        iCallback callback = new ConnectCallback(connSocket, this,
+                                                 neighbor, fileName);
 	        
 	        TimeOutEvent event = new TimeOutEvent(callback);
 	        timer.schedule(event, 5000);
@@ -145,12 +137,14 @@ public class ClientNode implements Node {
 			InputStream is = connSocket.getInputStream();
 			BufferedReader br = new BufferedReader (new InputStreamReader(is, "US-ASCII"));
 			String line = br.readLine();
+            callback.stop();
+
 			
 			// Process the return from them
         	neighbor.bitmap = BitMapContainer.bitmapFromString(line);
         	
         	if (connSocket.isClosed()) {
-        		return null;
+        		return;
         	}
 	        line = br.readLine();
 			
@@ -160,7 +154,7 @@ public class ClientNode implements Node {
 			e.printStackTrace();
 		}
 		
-		return null;
+		return;
 	}
 
 	public void have(Neighbor neighbor, String fileName, int index) {

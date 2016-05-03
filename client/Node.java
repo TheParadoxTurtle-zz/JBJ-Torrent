@@ -17,12 +17,7 @@ public interface Node {
 
     // Tries to connect with a neighboring node
     //
-    // Must return null if:
-    //  fails to connect
-    //
-    //  Otherwise returns bitmap of file
-    //
-    public boolean[] connect(Neighbor neighbor, String fileName);
+    public void connect(Neighbor neighbor, String fileName);
 
     // Tells neighbor that this node now has the piece at index
     public void have(Neighbor neighbor, String fileName, int index);
