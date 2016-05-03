@@ -54,12 +54,14 @@ public class TrackerServer {
            	BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream(), enc));
             String line = inFromClient.readLine();
             System.out.println(line);
-	        while (!(line == "")) {
+	        while (!(line.equals(""))) {
 	        	//SEED request
-	        	String[] pair = line.split(" ");
+                StringTokenizer st = new StringTokenizer(line);
+                String command = st.nextToken();
+                String arg = st.nextToken();
 	        	
-	        	if(pair[0].equals("SEED")) {
-	        		handleSEED(connSocket, pair[1]);
+	        	if(command.equals("SEED")) {
+	        		handleSEED(connSocket, arg);
 	        	}
 	        	
 		        line = inFromClient.readLine();
@@ -68,6 +70,7 @@ public class TrackerServer {
     }
     
     private static void handleSEED(Socket connSocket, String fileName) {
+        System.out.println("handleSEED: " + fileName);
     	//add node's InetAddress
 		ArrayList<NodeID> list = map.get(fileName);
 		NodeID id = new NodeID(connSocket.getInetAddress(), connSocket.getPort());
