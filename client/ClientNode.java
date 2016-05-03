@@ -126,7 +126,8 @@ public class ClientNode implements Node {
             if(neighbor.bitmap != null)
                 return;
 
-			Socket connSocket = new Socket(server_ip, server_port);
+            NodeID nid = neighbor.nodeid;
+			Socket connSocket = new Socket(nid.ip, nid.port);
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			String message = createMessageWithBitMap("CONNECT", fileName, client_port, torrents.get(fileName).bitmap);
@@ -165,7 +166,8 @@ public class ClientNode implements Node {
 
 	public void have(Neighbor neighbor, String fileName, int index) {
 		try {
-			Socket connSocket = new Socket(server_ip, server_port);
+            NodeID nid = neighbor.nodeid;
+			Socket connSocket = new Socket(nid.ip, nid.port);
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			String message = createMessage("HAVE", fileName, client_port, index);
@@ -233,7 +235,11 @@ public class ClientNode implements Node {
 					int port = Integer.parseInt(st.nextToken());
 					NodeID nodeid = new NodeID(address, port);
 					String fileName = st.nextToken();
-					Neighbor neighbor = client.findNeighbor(nodeid, fileName);
+
+                    Debug.print(nodeid.toString());
+                    Debug.print(fileName);
+					
+                    Neighbor neighbor = client.findNeighbor(nodeid, fileName);
 					if (neighbor == null) {
 						System.out.println("Neighbor invalid");
 						continue;
@@ -252,6 +258,10 @@ public class ClientNode implements Node {
 					NodeID nodeid = new NodeID(address, port);
 					String fileName = st.nextToken();
 					int index = Integer.parseInt(st.nextToken());
+
+                    Debug.print(nodeid.toString());
+                    Debug.print(fileName);
+
 					Neighbor neighbor = client.findNeighbor(nodeid, fileName);
 					if (neighbor == null) {
 						System.out.println("Neighbor invalid");
