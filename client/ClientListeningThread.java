@@ -17,7 +17,7 @@ public class ClientListeningThread implements Runnable {
 		try {
 			this.node = node;
 			this.port = port;
-			welcomeSocket = new ServerSocket(port);
+			this.welcomeSocket = new ServerSocket(port);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -76,7 +76,7 @@ public class ClientListeningThread implements Runnable {
 	        		//message = "CHOKE"
 	        	}
 	        	DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
-		        System.out.println(message);
+		        Debug.print(message);
 		        outToClient.write(message.getBytes("US-ASCII"));
 
 			} catch (Exception e) {
