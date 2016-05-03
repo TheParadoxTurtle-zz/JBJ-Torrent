@@ -10,6 +10,7 @@ public class BitMapContainer {
 
     public BitMapContainer(int length) {
         data = new byte[length][pieceLength];
+        bitmap = new boolean[length];
     }
     
     public BitMapContainer(String fileName) throws IOException {
