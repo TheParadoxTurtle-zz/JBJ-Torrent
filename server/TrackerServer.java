@@ -99,7 +99,9 @@ public class TrackerServer {
             StringBuffer buf = new StringBuffer();
             for(NodeID i : list) {
                 buf.append(i.toString());
+                buf.append("\r\n");
             }
+            buf.append("\r\n");
             message = buf.toString();
 		}
         //
