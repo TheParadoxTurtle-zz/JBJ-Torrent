@@ -103,10 +103,11 @@ public class TrackerServer {
 		NodeID id = new NodeID(connSocket.getInetAddress(), port);
 		String message = "";
 		Integer length = fileLengths.get(fileName);
-		if(length != null) {
+		String neighbors = getNeighbors(list, id);
+		if(length != null && !neighbors.equals("NO_NEIGHBORS\r\n\r\n")) {
 			message = length.toString() + "\r\n";
 		}
-        message += getNeighbors(list, id);
+        message += neighbors;
 
 	    // The message to be sent
         try {
