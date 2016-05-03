@@ -19,6 +19,7 @@ import client.NodeID;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.DataOutputStream;
 import java.net.*;
 
 public class TrackerServer {
@@ -96,18 +97,23 @@ public class TrackerServer {
 		}
 		else {
             StringBuffer buf = new StringBuffer();
-            for(NodeID id : list) {
-                buf.append(id.toString());
+            for(NodeID i : list) {
+                buf.append(i.toString());
             }
             message = buf.toString();
 		}
         //
 	    // The message to be sent
-	    DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
-	    System.out.println(message);
-	    outToClient.write(message.getBytes("US-ASCII"));
-	    
-	    connSocket.close();
+        try {
+	        DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
+	        System.out.println(message);
+	        outToClient.write(message.getBytes("US-ASCII"));
+	        
+	        connSocket.close();
+        } catch(Exception e) {
+            System.out.println("Error outputing to client");
+            e.printStackTrace();
+        }
     }
 }
 
