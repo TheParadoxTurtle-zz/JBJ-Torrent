@@ -29,9 +29,16 @@ public class TrackerServer {
 	protected static HashMap<String,ArrayList<NodeID>> map = new HashMap<String,ArrayList<NodeID>>();
 
 	public static void main(String[] args) throws Exception {
-		serverPort = Integer.parseInt(args[1]);
+		try {
+			serverPort = Integer.parseInt(args[0]);
+		} catch(Exception e) {
+			System.out.println("java TrackerServer port");
+			e.printStackTrace();
+		}
+
 		//create listening socket on port
 		welcomeSocket = new ServerSocket(serverPort);
+		System.out.println("Running TrackerServer on port " + serverPort);
 		StartSequentialServer();
 	}	
 
