@@ -16,7 +16,7 @@ package server;
 import java.util.*;
 
 import client.NodeID;
-import debug.Debug;
+import lib.Debug;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -33,6 +33,7 @@ public class TrackerServer {
 	protected static int serverPort = 6789;
 
 	protected static HashMap<String,ArrayList<NodeID>> map = new HashMap<String,ArrayList<NodeID>>();
+	protected static HashMap<String,Integer> fileLengths = new HashMap<String,Integer>();
 
 	public static void main(String[] args) throws Exception {
 		try {
@@ -64,7 +65,9 @@ public class TrackerServer {
                 int port = Integer.parseInt(st.nextToken());
 	        	
 	        	if(command.equals("SEED")) {
-	        		handleSEED(connSocket, arg, port);
+	        		//get file length
+	        		int length = Integer.parseInt(st.nextToken());
+	        		handleSEED(connSocket, arg, port, length);
 	        	}
                 else if(command.equals("GET")) {
                     handleGetNeighbors(connSocket, arg, port);
@@ -75,8 +78,10 @@ public class TrackerServer {
         }
     }
     
-    private static void handleSEED(Socket connSocket, String fileName, int port) {
+    private static void handleSEED(Socket connSocket, String fileName, int port, int length) {
         Debug.print("handleSEED: " + fileName);
+        //add file length
+        fileLengths.put(fileName,length);
     	//add node's InetAddress
 		ArrayList<NodeID> list = map.get(fileName);
 		NodeID id = new NodeID(connSocket.getInetAddress(), port); 
@@ -96,12 +101,17 @@ public class TrackerServer {
         ArrayList<NodeID> list = map.get(fileName);
 
 		NodeID id = new NodeID(connSocket.getInetAddress(), port);
-        String message = getNeighbors(list, id);
+		String message = "";
+		Integer length = fileLengths.get(fileName);
+		if(length != null) {
+			message = length.toString() + "\r\n";
+		}
+        message += getNeighbors(list, id);
 
 	    // The message to be sent
         try {
 	        DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
-	        System.out.println(message);
+	        Debug.print(message);
 	        outToClient.write(message.getBytes("US-ASCII"));
 	        
 	        connSocket.close();

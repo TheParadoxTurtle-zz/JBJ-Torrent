@@ -1,4 +1,4 @@
-package debug;
+package lib;
 
 public class Debug {
     public static final boolean _DEBUG = true;
