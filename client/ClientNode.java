@@ -40,14 +40,13 @@ public class ClientNode implements Node {
 		ClientNode client = new ClientNode(server_ip, server_port, client_port);
 		
 		// Do stuff
-		client.seed("dzc");
-
-		client.getNeighbors("dzc");
 
 		//start listening on specified port
 		ClientListeningThread clt = new ClientListeningThread(client, client_port);
 		Thread thread = new Thread(clt);
 		thread.start();
+		
+		execute(client);
 	}
 	
 	//seeds to server
@@ -56,10 +55,16 @@ public class ClientNode implements Node {
 			Socket connSocket = new Socket(server_ip, server_port);
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
-			String message = createMessage("SEED", fileName, client_port);
+			
+			BitMapContainer bmc = new BitMapContainer(fileName);
+			int length = bmc.bitmap.length;
+			torrents.put(fileName, bmc);
+			
+			String message = createMessage("SEED", fileName, client_port, length);
 			//String message = "SEED " + fileName + " " + client_port;
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
+		
 			
 			connSocket.close();
 		}
@@ -81,7 +86,7 @@ public class ClientNode implements Node {
 			InputStream is = connSocket.getInputStream();
 			BufferedReader br = new BufferedReader (new InputStreamReader(is, "US-ASCII"));
 			String line = br.readLine();
-			
+			Debug.print(line);
 			// First line is length of bitmap
         	if (line.equals("NO_NEIGHBORS")) {
         		connSocket.close();
@@ -276,7 +281,7 @@ public class ClientNode implements Node {
 	}
 	
 	private String createMessage(String action, String fileName, int port, int index) {
-		return action + " " + fileName + " " + port + index + "\r\n\r\n";
+		return action + " " + fileName + " " + port + " " + index + "\r\n\r\n";
 	}
 	
 	private String createMessage(String action, String fileName, int port) {
