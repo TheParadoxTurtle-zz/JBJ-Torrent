@@ -12,20 +12,23 @@ import java.util.StringTokenizer;
 public class ClientNode implements Node {
 	private InetAddress server_ip;
 	private int server_port;
+	private int client_port;
 	private HashMap<String, ArrayList<NodeID>> neighbor_map;
 	
-	public ClientNode(InetAddress server_ip, int server_port) {
+	public ClientNode(InetAddress server_ip, int server_port, int client_port) {
 		this.server_ip = server_ip;
 		this.server_port = server_port;
+		this.client_port = client_port;
 		this.neighbor_map = new HashMap<String, ArrayList<NodeID>>();
 	}
 	
 	public static void main(String args[]) throws Exception  {	
 		InetAddress server_ip = InetAddress.getByName(args[0]);
 		int server_port = Integer.parseInt(args[1]);
-		String mode = args[2];
+		int client_port = Integer.parseInt(args[2]);
+		//String mode = args[3];
 		
-		ClientNode client = new ClientNode(server_ip, server_port);
+		ClientNode client = new ClientNode(server_ip, server_port, client_port);
 		
 		// Do stuff
 		client.seed("dzc");
@@ -38,7 +41,8 @@ public class ClientNode implements Node {
 			Socket connSocket = new Socket(server_ip, server_port);
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
-			String message = createMessage("SEED", fileName);
+			String message = createMessage("SEED", fileName, client_port);
+			//String message = "SEED " + fileName + " " + client_port;
 			System.out.println(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			
@@ -54,7 +58,7 @@ public class ClientNode implements Node {
 			Socket connSocket = new Socket(server_ip, server_port);
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
-			String message = createMessage("GET", fileName);
+			String message = createMessage("GET", fileName, client_port);
 			System.out.println(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			
@@ -134,8 +138,8 @@ public class ClientNode implements Node {
 		
 	}
 	
-	private String createMessage(String action, String fileName) {
-		return action + " " + fileName + "\r\n\r\n";
+	private String createMessage(String action, String fileName, int port) {
+		return action + " " + fileName + " " + port + "\r\n\r\n";
 	}
 	
 }
