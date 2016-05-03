@@ -43,25 +43,28 @@ public class ClientListeningThread implements Runnable {
 	        	//send bitmap
 	        	if(command.equals("CONNECT")) {
 	        		int port = Integer.parseInt(st.nextToken());
-	        		boolean[] bitmap = node.getBitmap(arg);
+
+	        		//get neighbor bitmap
 	        		line = inFromClient.readLine();
 
 	        		//update neighbor bitmaps
 	        		NodeID nid = new NodeID(connSocket.getInetAddress(),port);
-	        		Neighbor neighbor = new Neighbor(nid);
+	        		Neighbor neighbor = node.getNeighbor(nid);
 	        		neighbor.bitmap = BitMapContainer.bitmapFromString(line);
 
 	        		//send own bitmap
-	        		message = BitMapContainer.stringFromBitmap(node.getBitmap(arg));
-	        		message += "\r\n";
+	        		message = BitMapContainer.stringFromBitmap(node.getBitMap(arg));
+	        		message += "\r\n\r\n";
 	        	}
 	        	//peer is telling me he has another piece
 	        	else if(command.equals("HAVE")) {
 	        		//get port number
 	        		int port = Integer.parseInt(st.nextToken());
+	        		NodeID nid = new NodeID(connSocket.getInetAddress(),port);
+	        		Neighbor neighbor = node.getNeighbor(nid);
 	        		//get piece number
 	        		int index = Integer.parseInt(st.nextToken());
-	        		//node.updateBitmaps(arg, new NodeID(connSocket.getInetAddress(),port), index);
+	        		neighbor.bitmap[index] = true;
 	        	}
 	        	//peer is asking if they can request a piece
 	        	else if(command.equals("INTERESTED")) {
