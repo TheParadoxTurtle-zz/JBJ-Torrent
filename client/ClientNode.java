@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.Timer;
 
@@ -203,6 +204,77 @@ public class ClientNode implements Node {
 		
 	}
 	
+	public static void execute(ClientNode client) {
+		while (true) {
+			Scanner scanner = new Scanner(System.in);
+			String line = scanner.nextLine();
+			StringTokenizer st = new StringTokenizer(line);
+			String command = st.nextToken();
+			
+			if (!st.hasMoreTokens()) {
+				System.out.println("Invalid command");
+				continue;
+			}
+			
+			if (command.equals("seed")) {
+				client.seed(st.nextToken());
+			}
+			else if (command.equals("getNeighbors")) {
+				client.getNeighbors(st.nextToken());
+			}
+			else if (command.equals("connect")) { // connect address port fileName
+				try {
+					InetAddress address = InetAddress.getByName(st.nextToken());
+					int port = Integer.parseInt(st.nextToken());
+					NodeID nodeid = new NodeID(address, port);
+					String fileName = st.nextToken();
+					Neighbor neighbor = client.findNeighbor(nodeid, fileName);
+					if (neighbor == null) {
+						System.out.println("Neighbor invalid");
+						continue;
+					}
+					
+					client.connect(neighbor, fileName);
+				}
+				catch (Exception e) {
+					System.out.println("Invalid command");
+				}
+			}
+			else if (command.equals("have")) { // have address port filename index
+				try {
+					InetAddress address = InetAddress.getByName(st.nextToken());
+					int port = Integer.parseInt(st.nextToken());
+					NodeID nodeid = new NodeID(address, port);
+					String fileName = st.nextToken();
+					int index = Integer.parseInt(st.nextToken());
+					Neighbor neighbor = client.findNeighbor(nodeid, fileName);
+					if (neighbor == null) {
+						System.out.println("Neighbor invalid");
+						continue;
+					}
+					
+					client.have(neighbor, fileName, index);
+				}
+				catch (Exception e) {
+					System.out.println("Invalid command");
+				}
+			}
+			else {
+				System.out.println("Invalid command");
+			}
+		}
+	}
+
+	public Neighbor findNeighbor(NodeID nodeid, String fileName) {
+		ArrayList<Neighbor> neighbors = neighbor_maps.get(fileName);
+		for (Neighbor neighbor : neighbors) {
+			if (neighbor.nodeid.equals(nodeid)) {
+				return neighbor;
+			}
+		}
+		return null;
+	}
+	
 	private String createMessage(String action, String fileName, int port, int index) {
 		return action + " " + fileName + " " + port + index + "\r\n\r\n";
 	}
@@ -223,3 +295,7 @@ public class ClientNode implements Node {
 		return torrents.get(fileName).bitmap;
 	}
 }
+
+
+
+
