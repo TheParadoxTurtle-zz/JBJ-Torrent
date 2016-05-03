@@ -95,31 +95,8 @@ public class TrackerServer {
         ArrayList<NodeID> list = map.get(fileName);
 
 		NodeID id = new NodeID(connSocket.getInetAddress(), port);
-        String message;
+        String message = getNeighbors(list, id);
 
-		if(list == null) {
-            System.out.println("No neighbors");
-            message = "NO_NEIGHBORS\r\n\r\n";
-		}
-		else {
-            System.out.println("Neighbors");
-            StringBuffer buf = new StringBuffer();
-            for(NodeID i : list) {
-                if(i.equals(id))
-                    continue;
-                buf.append(i.toString());
-                buf.append("\r\n");
-            }
-            if(buf.length() == 0)
-                message = "NO_NEIGHBORS\r\n\r\n";
-            else {
-                buf.append("\r\n");
-                message = buf.toString();
-                if(!list.contains(id))
-			        list.add(id);
-            }
-		}
-        //
 	    // The message to be sent
         try {
 	        DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
@@ -130,6 +107,33 @@ public class TrackerServer {
         } catch(Exception e) {
             System.out.println("Error outputing to client");
             e.printStackTrace();
+        }
+    }
+
+    // returns the message appropriate for the given list and id
+    // this method returns all neighbors that exist that are not the user
+    // If there are neighbors this method also adds the user to the 
+    // list of neighbors
+
+    public static String getNeighbors(ArrayList<NodeID> list, NodeID id) {
+		if(list == null) {
+            System.out.println("No neighbors");
+            return "NO_NEIGHBORS\r\n\r\n";
+		}
+        StringBuffer buf = new StringBuffer();
+        for(NodeID i : list) {
+            if(i.equals(id))
+                continue;
+            buf.append(i.toString());
+            buf.append("\r\n");
+        }
+        if(buf.length() == 0)
+            return "NO_NEIGHBORS\r\n\r\n";
+        else {
+            buf.append("\r\n");
+            return buf.toString();
+            if(!list.contains(id))
+		        list.add(id);
         }
     }
 }
