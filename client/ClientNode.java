@@ -14,9 +14,9 @@ public class ClientNode implements Node {
 	}
 	
 	public static void main(String args[]) throws Exception  {	
-		InetAddress server_ip = InetAddress.getByName(args[1]);
-		int server_port = Integer.parseInt(args[2]);
-		String mode = args[3];
+		InetAddress server_ip = InetAddress.getByName(args[0]);
+		int server_port = Integer.parseInt(args[1]);
+		String mode = args[2];
 		
 		ClientNode client = new ClientNode(server_ip, server_port);
 		
