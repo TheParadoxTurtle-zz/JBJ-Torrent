@@ -60,12 +60,13 @@ public class TrackerServer {
                 StringTokenizer st = new StringTokenizer(line);
                 String command = st.nextToken();
                 String arg = st.nextToken();
+                int port = Integer.parseInt(st.nextToken());
 	        	
 	        	if(command.equals("SEED")) {
-	        		handleSEED(connSocket, arg);
+	        		handleSEED(connSocket, arg, port);
 	        	}
                 else if(command.equals("GET")) {
-                    handleGetNeighbors(connSocket, arg);
+                    handleGetNeighbors(connSocket, arg, port);
                 }
 	        	
 		        line = inFromClient.readLine();
@@ -73,11 +74,11 @@ public class TrackerServer {
         }
     }
     
-    private static void handleSEED(Socket connSocket, String fileName) {
+    private static void handleSEED(Socket connSocket, String fileName, int port) {
         System.out.println("handleSEED: " + fileName);
     	//add node's InetAddress
 		ArrayList<NodeID> list = map.get(fileName);
-		NodeID id = new NodeID(connSocket.getInetAddress(), connSocket.getPort());
+		NodeID id = new NodeID(connSocket.getInetAddress(), port); 
 		if(list == null) {
 			list = new ArrayList<NodeID>();
 			list.add(id);
