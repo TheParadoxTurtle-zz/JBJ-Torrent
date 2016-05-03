@@ -47,4 +47,29 @@ public class BitMapContainer {
             bitmap[i] = true;
     }
 
+    public static boolean[] bitmapFromString(String s) {
+        boolean[] bitmap = new boolean[s.length()];
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '1') {
+                bitmap[i] = true;
+            }
+            else {
+                bitmap[i] = false;
+            }
+        }
+        return bitmap;
+    }
+
+    public static String stringFromBitmap(boolean[] bitmap) {
+        StringBuilder b = new StringBuilder();
+        for(int i = 0; i < bitmap.length; i++) {
+            if(bitmap[i]) {
+                b.append("1");
+            }
+            else {
+                b.append("0");
+            }
+        }
+        return b.toString();
+    }
 }

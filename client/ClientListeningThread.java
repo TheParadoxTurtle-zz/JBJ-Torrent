@@ -42,18 +42,18 @@ public class ClientListeningThread implements Runnable {
 	        	//actually handle commands
 	        	//send bitmap
 	        	if(command.equals("CONNECT")) {
-	        		boolean[] bitmap = node.getBitMap(arg);
-	        		StringBuilder buf = new StringBuilder();
-	        		for(int i = 0; i < bitmap.length; i++) {
-	        			if(bitmap[i]) {
-	        				buf.append("1");
-	        			}
-	        			else {
-	        				buf.append("0");
-	        			}
-	        			buf.append("\r\n\r\n");
-	        			message = buf.toString();
-	        		}
+	        		int port = Integer.parseInt(st.nextToken());
+	        		boolean[] bitmap = node.getBitmap(arg);
+	        		line = inFromClient.readLine();
+
+	        		//update neighbor bitmaps
+	        		NodeID nid = new NodeID(connSocket.getInetAddress(),port);
+	        		Neighbor neighbor = new Neighbor(nid);
+	        		neighbor.bitmap = BitMapContainer.bitmapFromString(line);
+
+	        		//send own bitmap
+	        		message = BitMapContainer.stringFromBitmap(node.getBitmap(arg));
+	        		message += "\r\n";
 	        	}
 	        	//peer is telling me he has another piece
 	        	else if(command.equals("HAVE")) {
@@ -65,11 +65,9 @@ public class ClientListeningThread implements Runnable {
 	        	}
 	        	//peer is asking if they can request a piece
 	        	else if(command.equals("INTERESTED")) {
-	        		int port = Integer.parseInt(st.nextToken());
 	        		//choose whether to unchoke or choke
 	        		//message = "UNCHOKE";
 	        		//message = "CHOKE"
-	        		message += "\r\n";
 	        	}
 	        	DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 		        System.out.println(message);
@@ -80,4 +78,4 @@ public class ClientListeningThread implements Runnable {
 			}
 		}
 	}
-}	
+}
