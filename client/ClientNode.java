@@ -28,8 +28,8 @@ public class ClientNode implements Node {
 		
 		// Do stuff
 		client.seed("dzc");
-		
-		
+
+		client.getNeighbors("dzc");
 	}
 	
 	public void seed(String fileName) {
@@ -61,12 +61,12 @@ public class ClientNode implements Node {
 			InputStream is = connSocket.getInputStream();
 			BufferedReader br = new BufferedReader (new InputStreamReader(is, "US-ASCII"));
 			String line = br.readLine();
-			System.out.println(line);
 			
 			ArrayList<NodeID> list = new ArrayList<NodeID>();
 			neighbor_map.put(fileName, list);
 			
 	        while (!(line.equals(""))) {
+	        	System.out.println(line);
 	        	// Check if no neighbors
 	        	if (line.equals("NO_NEIGHBORS")) {
 	        		connSocket.close();
