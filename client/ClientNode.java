@@ -8,20 +8,26 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
+import java.util.Timer;
 
-import debug.Debug;
+import lib.Debug;
 
 public class ClientNode implements Node {
 	private InetAddress server_ip;
 	private int server_port;
 	private int client_port;
-	private HashMap<String, ArrayList<NodeID>> neighbor_map;
+	private HashMap<String, ArrayList<Neighbor>> neighbor_maps;
+	private HashMap<String, BitMapContainer> torrents;
+	
+	private Timer timer;
 	
 	public ClientNode(InetAddress server_ip, int server_port, int client_port) {
 		this.server_ip = server_ip;
 		this.server_port = server_port;
 		this.client_port = client_port;
-		this.neighbor_map = new HashMap<String, ArrayList<NodeID>>();
+		this.torrents = new HashMap<String, BitMapContainer>();
+		this.neighbor_maps = new HashMap<String, ArrayList<Neighbor>>();
+		this.timer = new Timer();
 	}
 	
 	public static void main(String args[]) throws Exception  {	
@@ -38,7 +44,7 @@ public class ClientNode implements Node {
 		client.getNeighbors("dzc");
 
 		//start listening on specified port
-		ClientListeningThread clt = new ClientListeningThread(client_port);
+		ClientListeningThread clt = new ClientListeningThread(client, client_port);
 		Thread thread = new Thread(clt);
 		thread.start();
 	}
@@ -62,7 +68,7 @@ public class ClientNode implements Node {
 	}
 
 	//gets neighbors from server
-	public boolean getNeighbors(String fileName) {
+	public boolean getNeighbors(String fileName) {		
 		try {
 			Socket connSocket = new Socket(server_ip, server_port);
 			// The message to be sent
@@ -75,21 +81,30 @@ public class ClientNode implements Node {
 			InputStream is = connSocket.getInputStream();
 			BufferedReader br = new BufferedReader (new InputStreamReader(is, "US-ASCII"));
 			String line = br.readLine();
-
-			ArrayList<NodeID> list = new ArrayList<NodeID>();
-			neighbor_map.put(fileName, list);
+			
+			// First line is length of bitmap
+        	if (line.equals("NO_NEIGHBORS")) {
+        		connSocket.close();
+        		return false;
+        	}
+			int bitmap_length = Integer.parseInt(line);
+			BitMapContainer bmc = torrents.get(fileName);
+			if (bmc.bitmap == null || bmc.bitmap.length != bitmap_length) {
+				bmc.bitmap = new boolean[bitmap_length];
+			}
+			line = br.readLine();
+			
+			ArrayList<Neighbor> list = new ArrayList<Neighbor>();
+			neighbor_maps.put(fileName, list);
 
 	        while (!(line.equals(""))) {
 	        	Debug.print(line);
 	        	// Check if no neighbors
-	        	if (line.equals("NO_NEIGHBORS")) {
-	        		connSocket.close();
-	        		return false;
-	        	}
 	        	
 	        	// There are neighbors
                 NodeID nid = new NodeID(line);
-                list.add(nid);
+                Neighbor neighbor = new Neighbor(nid);
+                list.add(neighbor);
 	        	
 		        line = br.readLine();
 	        }
@@ -100,55 +115,124 @@ public class ClientNode implements Node {
 			e.printStackTrace();
 		}
 		
-		
-		
 		return false;
 	}
 
-	@Override
-	public boolean[] connect(NodeID neighbor, String filename) {
-		// TODO Auto-generated method stub
+	public boolean[] connect(Neighbor neighbor, String fileName) {
+		try {
+			Socket connSocket = new Socket(server_ip, server_port);
+			// The message to be sent
+			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
+			String message = createMessage("CONNECT", fileName, client_port);
+			Debug.print(message);
+			outToClient.write(message.getBytes("US-ASCII"));
+			
+			// Timeout Event
+	        iCallback callback = new iCallback() {
+	        	public void call() {
+	        		try {
+	        			if (!connSocket.isClosed()) {
+	        				connSocket.close();
+	        			}
+	        		}
+	        		catch (Exception e) {
+	        			
+	        		}
+	        	}
+	        };
+	        
+	        TimeOutEvent event = new TimeOutEvent(callback);
+	        timer.schedule(event, 5000);
+			
+			InputStream is = connSocket.getInputStream();
+			BufferedReader br = new BufferedReader (new InputStreamReader(is, "US-ASCII"));
+			String line = br.readLine();
+			
+			// Process the return from them
+        	int line_length = line.length();
+        	
+        	for (int i = 0; i < line_length; i++) {
+        		if (line.charAt(i) == '1') {
+        			neighbor.bitmap[i] = true;
+        		}
+        		else {
+        			neighbor.bitmap[i] = false;
+        		}
+        	}
+        	
+        	if (connSocket.isClosed()) {
+        		return null;
+        	}
+	        line = br.readLine();
+			
+			connSocket.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
+	public void have(Neighbor neighbor, String fileName, int index) {
+		try {
+			Socket connSocket = new Socket(server_ip, server_port);
+			// The message to be sent
+			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
+			String message = createMessage("HAVE", fileName, client_port, index);
+			Debug.print(message);
+			outToClient.write(message.getBytes("US-ASCII"));
+
+			connSocket.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Override
-	public void have(NodeID neighbor, String fileName, int index) {
+	public void interested(Neighbor neighbor, String fileName) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void interested(NodeID neighbor, String fileName) {
+	public void unchoke(Neighbor neighbor, String fileName) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void unchoke(NodeID neighbor, String fileName) {
+	public void request(Neighbor neighbor, String fileName, int index) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void request(NodeID neighbor, String fileName, int index) {
+	public void send(Neighbor neighbor, String fileName, int index) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void send(NodeID neighbor, String fileName, int index) {
+	public void cancel(Neighbor neighbor, String fileName, int index) {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public void cancel(NodeID neighbor, String fileName, int index) {
-		// TODO Auto-generated method stub
-		
+	
+	private String createMessage(String action, String fileName, int port, int index) {
+		return action + " " + fileName + " " + port + index + "\r\n\r\n";
 	}
 	
 	private String createMessage(String action, String fileName, int port) {
 		return action + " " + fileName + " " + port + "\r\n\r\n";
 	}
 	
+	private String createMessage(String action, String fileName) {
+		return action + " " + fileName + "\r\n\r\n";
+	}
+	
+	public boolean[] getBitMap(String fileName) {
+		return torrents.get(fileName).bitmap;
+	}
 }

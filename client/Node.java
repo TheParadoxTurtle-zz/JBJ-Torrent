@@ -22,23 +22,23 @@ public interface Node {
     //
     //  Otherwise returns bitmap of file
     //
-    public boolean[] connect(NodeID neighbor, String fileName);
+    public boolean[] connect(Neighbor neighbor, String fileName);
 
     // Tells neighbor that this node now has the piece at index
-    public void have(NodeID neighbor, String fileName, int index);
+    public void have(Neighbor neighbor, String fileName, int index);
 
     // Tells neighbor that this node is interested 
-    public void interested(NodeID neighbor, String fileName);
+    public void interested(Neighbor neighbor, String fileName);
 
     // Tells neighbor they may request
-    public void unchoke(NodeID neighbor, String fileName);
+    public void unchoke(Neighbor neighbor, String fileName);
 
     // Asks for specific piece
-    public void request(NodeID neighbor, String fileName, int index);
+    public void request(Neighbor neighbor, String fileName, int index);
 
     // Sends specific piece
-    public void send(NodeID neighbor, String fileName, int index);
+    public void send(Neighbor neighbor, String fileName, int index);
 
     // Tells peer no longer need this piece
-    public void cancel(NodeID neighbor, String fileName, int index);
+    public void cancel(Neighbor neighbor, String fileName, int index);
 }

@@ -42,7 +42,7 @@ public class ClientListeningThread implements Runnable {
 	        	//actually handle commands
 	        	//send bitmap
 	        	if(command.equals("CONNECT")) {
-	        		boolean[] bitmap = node.getBitmap(arg);
+	        		boolean[] bitmap = node.getBitMap(arg);
 	        		StringBuilder buf = new StringBuilder();
 	        		for(int i = 0; i < bitmap.length; i++) {
 	        			if(bitmap[i]) {
@@ -80,4 +80,4 @@ public class ClientListeningThread implements Runnable {
 			}
 		}
 	}
-}
+}	
