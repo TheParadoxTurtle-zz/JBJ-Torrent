@@ -16,7 +16,7 @@ package server;
 import java.util.*;
 
 import client.NodeID;
-import debug.Debug;
+import lib.Debug;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

@@ -4,17 +4,19 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import debug.Debug;
+import lib.*;
 
 //thread to handle connections to client 
 public class ClientListeningThread implements Runnable {
 
-	private static String enc = "US-ASCII";
-
 	private ServerSocket welcomeSocket = null;
+	private int port;
+	private ClientNode node;
 
-	public ClientListeningThread(int port) {
+	public ClientListeningThread(ClientNode node, int port) {
 		try {
+			this.node = node;
+			this.port = port;
 			welcomeSocket = new ServerSocket(port);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -27,19 +29,31 @@ public class ClientListeningThread implements Runnable {
 			try {
 				Socket connSocket = welcomeSocket.accept();
 				//handles peer to peer functions
-				BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream(), enc));
+				BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream(), Constants.STR_ENCODING));
 	            String line = inFromClient.readLine();
 	            Debug.print(line);
 		        while (!(line.equals(""))) {
 	                StringTokenizer st = new StringTokenizer(line);
 	                String command = st.nextToken();
 	                String arg = st.nextToken();
-	                int port = Integer.parseInt(st.nextToken());
-		        	
-		        	//actually handle commands
-		        	if(command.equals("")) {
 
-		        	}
+			        	
+		        	//actually handle commands
+		        	//send bitmap
+		        	if(command.equals("CONNECT")) {
+		        		boolean[] bitmap = new boolean[5];
+		        		//boolean[] bitmap = node.getBitmap();
+		        		StringBuilder buf = new StringBuilder();
+		        		for(int i = 0; i < bitmap.length; i++) {
+		        			if(bitmap[i]) {
+		        				buf.append("1");
+		        			}
+		        			else {
+		        				buf.append("0");
+		        			}
+		        			buf.append("\r\n\r\n");
+		        		}
+		        	}	
 
 			        line = inFromClient.readLine();
 		        }
