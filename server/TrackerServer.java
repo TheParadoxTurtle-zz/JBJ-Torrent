@@ -83,6 +83,32 @@ public class TrackerServer {
 			list.add(id);
 		}
     }
+
+    private static void handleGetNeighbors(Socket connSocket, String fileName) {
+        System.out.println("handleGetNeighbors: " + fileName);
+        ArrayList<NodeID> list = map.get(fileName);
+
+		NodeID id = new NodeID(connSocket.getInetAddress(), connSocket.getPort());
+        String message;
+
+		if(list == null) {
+            message = "NO_NEIGHBORS";
+		}
+		else {
+            StringBuffer buf = new StringBuffer();
+            for(NodeID id : list) {
+                buf.append(id.toString());
+            }
+            message = buf.toString();
+		}
+        //
+	    // The message to be sent
+	    DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
+	    System.out.println(message);
+	    outToClient.write(message.getBytes("US-ASCII"));
+	    
+	    connSocket.close();
+    }
 }
 
 
