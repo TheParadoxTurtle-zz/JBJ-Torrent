@@ -31,6 +31,6 @@ public class NodeID {
     }
     
     public String toString() {
-    	return ip.toString() + " " + port;
+    	return ip.toString().substring(1) + " " + port;
     }
 }

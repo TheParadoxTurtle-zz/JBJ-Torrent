@@ -289,6 +289,13 @@ public class ClientNode implements Node {
 		}
 		return null;
 	}
+
+	public Neighbor addNeighbor(NodeID nid, String fileName) {
+		ArrayList<Neighbor> neighbors = neighbor_maps.get(fileName);
+		Neighbor neighbor = new Neighbor(nid);
+		neighbors.add(neighbor);
+		return neighbor;
+	}
 	
 	private String createMessage(String action, String fileName, int port, int index) {
 		return action + " " + fileName + " " + port + " " + index + "\r\n\r\n";

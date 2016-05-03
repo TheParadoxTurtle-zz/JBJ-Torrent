@@ -50,6 +50,9 @@ public class ClientListeningThread implements Runnable {
 	        		//update neighbor bitmaps
 	        		NodeID nid = new NodeID(connSocket.getInetAddress(),port);
 	        		Neighbor neighbor = node.findNeighbor(nid,arg);
+	        		if(neighbor == null) {
+	        			neighbor = node.addNeighbor(nid,arg);
+	        		}
 	        		neighbor.bitmap = BitMapContainer.bitmapFromString(line);
 
 	        		//send own bitmap
