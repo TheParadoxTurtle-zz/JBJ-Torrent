@@ -50,7 +50,7 @@ public class ClientNode implements Node {
 	}
 	
 	//seeds to server
-	public void seed(String fileName) {
+	public void seed(String fileName) {	
 		try {
 			Socket connSocket = new Socket(server_ip, server_port);
 			// The message to be sent
@@ -59,6 +59,9 @@ public class ClientNode implements Node {
 			BitMapContainer bmc = new BitMapContainer(fileName);
 			int length = bmc.bitmap.length;
 			torrents.put(fileName, bmc);
+			
+			ArrayList<Neighbor> neighbors = new ArrayList<Neighbor>();
+			neighbor_maps.put(fileName, neighbors);
 			
 			String message = createMessage("SEED", fileName, client_port, length);
 			//String message = "SEED " + fileName + " " + client_port;
