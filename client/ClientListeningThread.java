@@ -49,7 +49,7 @@ public class ClientListeningThread implements Runnable {
 
 	        		//update neighbor bitmaps
 	        		NodeID nid = new NodeID(connSocket.getInetAddress(),port);
-	        		Neighbor neighbor = node.getNeighbor(nid);
+	        		Neighbor neighbor = node.findNeighbor(nid,arg);
 	        		neighbor.bitmap = BitMapContainer.bitmapFromString(line);
 
 	        		//send own bitmap
@@ -61,7 +61,7 @@ public class ClientListeningThread implements Runnable {
 	        		//get port number
 	        		int port = Integer.parseInt(st.nextToken());
 	        		NodeID nid = new NodeID(connSocket.getInetAddress(),port);
-	        		Neighbor neighbor = node.getNeighbor(nid);
+	        		Neighbor neighbor = node.findNeighbor(nid,arg);
 	        		//get piece number
 	        		int index = Integer.parseInt(st.nextToken());
 	        		neighbor.bitmap[index] = true;

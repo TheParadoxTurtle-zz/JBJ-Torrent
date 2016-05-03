@@ -1,6 +1,8 @@
+package client;
+
 import java.net.*;
 
-public class ConnectCallback implements iCallBack {
+public class ConnectCallback implements iCallback {
     Socket connSocket;
     ClientNode node;
     Neighbor neighbor;
@@ -13,7 +15,7 @@ public class ConnectCallback implements iCallBack {
         this.node = node;
         this.neighbor = neighbor;
         this.fileName = fileName;
-        receieved = false;
+        this.received = false;
     }
 
     public void stop() {
