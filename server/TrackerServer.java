@@ -16,6 +16,7 @@ package server;
 import java.util.*;
 
 import client.NodeID;
+import debug.Debug;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -37,13 +38,13 @@ public class TrackerServer {
 		try {
 			serverPort = Integer.parseInt(args[0]);
 		} catch(Exception e) {
-			System.out.println("java TrackerServer port");
-			e.printStackTrace();
+			Debug.print("java TrackerServer no port specified\n" +
+                    "Using port 6789");
 		}
 
 		//create listening socket on port
 		welcomeSocket = new ServerSocket(serverPort);
-		System.out.println("Running TrackerServer on port " + serverPort);
+		Debug.print("Running TrackerServer on port " + serverPort);
 		StartSequentialServer();
 	}	
 
@@ -75,7 +76,7 @@ public class TrackerServer {
     }
     
     private static void handleSEED(Socket connSocket, String fileName, int port) {
-        System.out.println("handleSEED: " + fileName);
+        Debug.print("handleSEED: " + fileName);
     	//add node's InetAddress
 		ArrayList<NodeID> list = map.get(fileName);
 		NodeID id = new NodeID(connSocket.getInetAddress(), port); 
@@ -91,7 +92,7 @@ public class TrackerServer {
     }
 
     private static void handleGetNeighbors(Socket connSocket, String fileName, int port) {
-        System.out.println("handleGetNeighbors: " + fileName);
+        Debug.print("handleGetNeighbors: " + fileName);
         ArrayList<NodeID> list = map.get(fileName);
 
 		NodeID id = new NodeID(connSocket.getInetAddress(), port);
@@ -117,7 +118,7 @@ public class TrackerServer {
 
     public static String getNeighbors(ArrayList<NodeID> list, NodeID id) {
 		if(list == null) {
-            System.out.println("No neighbors");
+            Debug.print("No neighbors");
             return "NO_NEIGHBORS\r\n\r\n";
 		}
         StringBuffer buf = new StringBuffer();
@@ -131,9 +132,9 @@ public class TrackerServer {
             return "NO_NEIGHBORS\r\n\r\n";
         else {
             buf.append("\r\n");
-            return buf.toString();
             if(!list.contains(id))
 		        list.add(id);
+            return buf.toString();
         }
     }
 }

@@ -1,3 +1,5 @@
+package debug;
+
 public class Debug {
     public static final boolean _DEBUG = true;
     public static void print(String s) {
