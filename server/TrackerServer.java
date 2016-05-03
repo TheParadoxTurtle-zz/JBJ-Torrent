@@ -89,11 +89,11 @@ public class TrackerServer {
 		}
     }
 
-    private static void handleGetNeighbors(Socket connSocket, String fileName) {
+    private static void handleGetNeighbors(Socket connSocket, String fileName, int port) {
         System.out.println("handleGetNeighbors: " + fileName);
         ArrayList<NodeID> list = map.get(fileName);
 
-		NodeID id = new NodeID(connSocket.getInetAddress(), connSocket.getPort());
+		NodeID id = new NodeID(connSocket.getInetAddress(), port);
         String message;
 
 		if(list == null) {
