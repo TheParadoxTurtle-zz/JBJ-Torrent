@@ -1,5 +1,4 @@
 package client;
-
 // Node.java
 //
 // Detail the requirements of a node for p2p communcation
@@ -23,23 +22,23 @@ public interface Node {
     //
     //  Otherwise returns bitmap of file
     //
-    public boolean[] connect(Node neighbor, String filename);
+    public boolean[] connect(NodeID neighbor, String fileName);
 
     // Tells neighbor that this node now has the piece at index
-    public void have(Node neighbor, String fileName, int index);
+    public void have(NodeID neighbor, String fileName, int index);
 
     // Tells neighbor that this node is interested 
-    public void interested(Node neighbor, String fileName);
+    public void interested(NodeID neighbor, String fileName);
 
     // Tells neighbor they may request
-    public void unchoke(Node neighbor, String fileName);
+    public void unchoke(NodeID neighbor, String fileName);
 
     // Asks for specific piece
-    public void request(Node neighbor, String fileName, int index);
+    public void request(NodeID neighbor, String fileName, int index);
 
     // Sends specific piece
-    public void send(Node neighbor, String fileName, int index);
+    public void send(NodeID neighbor, String fileName, int index);
 
     // Tells peer no longer need this piece
-    public void cancel(Node neighbor, String fileName, int index);
+    public void cancel(NodeID neighbor, String fileName, int index);
 }
