@@ -1,3 +1,4 @@
+package client;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -20,7 +21,7 @@ public class ClientNode implements Node {
 		ClientNode client = new ClientNode(server_ip, server_port);
 		
 		// Do stuff
-		
+		client.seed("dzc");
 		
 		
 	}
@@ -31,6 +32,7 @@ public class ClientNode implements Node {
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			String message = createMessage("SEED", fileName);
+			System.out.println(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			
 			connSocket.close();
