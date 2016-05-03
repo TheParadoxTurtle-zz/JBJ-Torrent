@@ -88,10 +88,8 @@ public class ClientNode implements Node {
         		return false;
         	}
 			int bitmap_length = Integer.parseInt(line);
-			BitMapContainer bmc = torrents.get(fileName);
-			if (bmc.bitmap == null || bmc.bitmap.length != bitmap_length) {
-				bmc.bitmap = new boolean[bitmap_length];
-			}
+			BitMapContainer bmc = new BitMapContainer(bitmap_length);
+			torrents.put(fileName, bmc);
 			line = br.readLine();
 			
 			ArrayList<Neighbor> list = new ArrayList<Neighbor>();
@@ -123,7 +121,7 @@ public class ClientNode implements Node {
 			Socket connSocket = new Socket(server_ip, server_port);
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
-			String message = createMessage("CONNECT", fileName, client_port);
+			String message = createMessageWithBitMap("CONNECT", fileName, client_port, torrents.get(fileName).bitmap);
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			
@@ -149,16 +147,7 @@ public class ClientNode implements Node {
 			String line = br.readLine();
 			
 			// Process the return from them
-        	int line_length = line.length();
-        	
-        	for (int i = 0; i < line_length; i++) {
-        		if (line.charAt(i) == '1') {
-        			neighbor.bitmap[i] = true;
-        		}
-        		else {
-        			neighbor.bitmap[i] = false;
-        		}
-        	}
+        	neighbor.bitmap = BitMapContainer.bitmapFromString(line);
         	
         	if (connSocket.isClosed()) {
         		return null;
@@ -230,6 +219,10 @@ public class ClientNode implements Node {
 	
 	private String createMessage(String action, String fileName) {
 		return action + " " + fileName + "\r\n\r\n";
+	}
+	
+	private String createMessageWithBitMap(String action, String fileName, int port, boolean[] bitmap) {
+		return action + " " + fileName + " " + port + "\r\n" + BitMapContainer.stringFromBitmap(bitmap) + "\r\n\r\n";
 	}
 	
 	public boolean[] getBitMap(String fileName) {
