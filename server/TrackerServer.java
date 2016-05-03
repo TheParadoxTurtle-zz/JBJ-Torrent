@@ -85,7 +85,8 @@ public class TrackerServer {
 			map.put(fileName,list);
 		}
 		else {
-			list.add(id);
+            if(!list.contains(id))
+			    list.add(id);
 		}
     }
 
@@ -114,7 +115,8 @@ public class TrackerServer {
             else {
                 buf.append("\r\n");
                 message = buf.toString();
-			    list.add(id);
+                if(!list.contains(id))
+			        list.add(id);
             }
 		}
         //
