@@ -15,8 +15,6 @@ public class TimeOutEvent extends TimerTask {
 	}
 	
 	public void run() {
-		synchronized (attachment) {
-			callback.call();
-		}
+		callback.call();
 	}
 }
