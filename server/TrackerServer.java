@@ -64,6 +64,9 @@ public class TrackerServer {
 	        	if(command.equals("SEED")) {
 	        		handleSEED(connSocket, arg);
 	        	}
+                else if(command.equals("GET")) {
+                    handleGetNeighbors(connSocket, arg);
+                }
 	        	
 		        line = inFromClient.readLine();
 	        }
@@ -93,9 +96,11 @@ public class TrackerServer {
         String message;
 
 		if(list == null) {
+            System.out.println("No neighbors");
             message = "NO_NEIGHBORS";
 		}
 		else {
+            System.out.println("Neighbors");
             StringBuffer buf = new StringBuffer();
             for(NodeID i : list) {
                 buf.append(i.toString());
@@ -103,6 +108,7 @@ public class TrackerServer {
             }
             buf.append("\r\n");
             message = buf.toString();
+			list.add(id);
 		}
         //
 	    // The message to be sent
