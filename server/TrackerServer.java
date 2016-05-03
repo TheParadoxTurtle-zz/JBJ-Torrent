@@ -26,7 +26,7 @@ public class TrackerServer {
 	protected static int threadPoolSize = 5;
 	protected static int serverPort = 6789;
 
-	protected static HashMap<String,ArrayList<NodeID>> map;
+	protected static HashMap<String,ArrayList<NodeID>> map = new HashMap<String,ArrayList<NodeID>>();
 
 	public static void main(String[] args) throws Exception {
 		serverPort = Integer.parseInt(args[1]);
