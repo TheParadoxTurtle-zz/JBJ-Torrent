@@ -97,18 +97,24 @@ public class TrackerServer {
 
 		if(list == null) {
             System.out.println("No neighbors");
-            message = "NO_NEIGHBORS";
+            message = "NO_NEIGHBORS\r\n\r\n";
 		}
 		else {
             System.out.println("Neighbors");
             StringBuffer buf = new StringBuffer();
             for(NodeID i : list) {
+                if(i.equals(id))
+                    continue;
                 buf.append(i.toString());
                 buf.append("\r\n");
             }
-            buf.append("\r\n");
-            message = buf.toString();
-			list.add(id);
+            if(buf.length() == 0)
+                message = "NO_NEIGHBORS\r\n\r\n";
+            else {
+                buf.append("\r\n");
+                message = buf.toString();
+			    list.add(id);
+            }
 		}
         //
 	    // The message to be sent
