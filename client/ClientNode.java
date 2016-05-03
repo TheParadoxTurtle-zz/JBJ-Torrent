@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
+import debug.Debug;
+
 public class ClientNode implements Node {
 	private InetAddress server_ip;
 	private int server_port;
@@ -34,8 +36,14 @@ public class ClientNode implements Node {
 		client.seed("dzc");
 
 		client.getNeighbors("dzc");
+
+		//start listening on specified port
+		ClientListeningThread clt = new ClientListeningThread(client_port);
+		Thread thread = new Thread(clt);
+		thread.start();
 	}
 	
+	//seeds to server
 	public void seed(String fileName) {
 		try {
 			Socket connSocket = new Socket(server_ip, server_port);
@@ -43,7 +51,7 @@ public class ClientNode implements Node {
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			String message = createMessage("SEED", fileName, client_port);
 			//String message = "SEED " + fileName + " " + client_port;
-			System.out.println(message);
+			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			
 			connSocket.close();
@@ -53,13 +61,14 @@ public class ClientNode implements Node {
 		}
 	}
 
+	//gets neighbors from server
 	public boolean getNeighbors(String fileName) {
 		try {
 			Socket connSocket = new Socket(server_ip, server_port);
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			String message = createMessage("GET", fileName, client_port);
-			System.out.println(message);
+			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			
 			
@@ -71,7 +80,7 @@ public class ClientNode implements Node {
 			neighbor_map.put(fileName, list);
 
 	        while (!(line.equals(""))) {
-	        	System.out.println(line);
+	        	Debug.print(line);
 	        	// Check if no neighbors
 	        	if (line.equals("NO_NEIGHBORS")) {
 	        		connSocket.close();
@@ -97,43 +106,43 @@ public class ClientNode implements Node {
 	}
 
 	@Override
-	public boolean[] connect(Node neighbor, String filename) {
+	public boolean[] connect(NodeID neighbor, String filename) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void have(Node neighbor, String fileName, int index) {
+	public void have(NodeID neighbor, String fileName, int index) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void interested(Node neighbor, String fileName) {
+	public void interested(NodeID neighbor, String fileName) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void unchoke(Node neighbor, String fileName) {
+	public void unchoke(NodeID neighbor, String fileName) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void request(Node neighbor, String fileName, int index) {
+	public void request(NodeID neighbor, String fileName, int index) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void send(Node neighbor, String fileName, int index) {
+	public void send(NodeID neighbor, String fileName, int index) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void cancel(Node neighbor, String fileName, int index) {
+	public void cancel(NodeID neighbor, String fileName, int index) {
 		// TODO Auto-generated method stub
 		
 	}
