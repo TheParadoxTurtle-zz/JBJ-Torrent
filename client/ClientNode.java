@@ -421,6 +421,10 @@ public class ClientNode implements Node {
 		return action + " " + fileName + " " + port + "\r\n" + BitMapContainer.stringFromBitmap(bitmap) + "\r\n\r\n";
 	}
 	
+	public BitMapContainer getBitMapContainer(String fileName) {
+		return torrents.get(fileName);
+	}
+	
 	public boolean[] getBitMap(String fileName) {
 		return torrents.get(fileName).bitmap;
 	}
