@@ -37,47 +37,87 @@ public class ClientListeningThread implements Runnable {
                 String command = st.nextToken();
                 String arg = st.nextToken();
 
+				int port = Integer.parseInt(st.nextToken());
+
+				NodeID nid = new NodeID(connSocket.getInetAddress(),port);
+				Neighbor neighbor = node.findNeighbor(nid,arg);
+
 		        String message = "";
 
 	        	//actually handle commands
 	        	//send bitmap
 	        	if(command.equals("CONNECT")) {
-	        		int port = Integer.parseInt(st.nextToken());
-
 	        		//get neighbor bitmap
 	        		line = inFromClient.readLine();
 
 	        		//update neighbor bitmaps
-	        		NodeID nid = new NodeID(connSocket.getInetAddress(),port);
-	        		Neighbor neighbor = node.findNeighbor(nid,arg);
 	        		if(neighbor == null) {
 	        			neighbor = node.addNeighbor(nid,arg);
 	        		}
 	        		neighbor.bitmap = BitMapContainer.bitmapFromString(line);
 
 	        		//send own bitmap
+	        		message = "CONNECTED " + arg + " " + port + "\r\n";
 	        		message = BitMapContainer.stringFromBitmap(node.getBitMap(arg));
 	        		message += "\r\n\r\n";
 	        	}
+	        	//neighbor 
+	        	else if(command.equals("CONNECTED")) {
+	        		//get neighbor bitmap
+	        		line = inFromClient.readLine();
+
+	        		//update neighbor bitmaps
+	        		if(neighbor == null) {
+	        			neighbor = node.addNeighbor(nid,arg);
+	        		}
+	        		neighbor.bitmap = BitMapContainer.bitmapFromString(line);
+	        	}
 	        	//peer is telling me he has another piece
 	        	else if(command.equals("HAVE")) {
-	        		//get port number
-	        		int port = Integer.parseInt(st.nextToken());
-	        		NodeID nid = new NodeID(connSocket.getInetAddress(),port);
-	        		Neighbor neighbor = node.findNeighbor(nid,arg);
 	        		//get piece number
 	        		int index = Integer.parseInt(st.nextToken());
 	        		neighbor.bitmap[index] = true;
 	        	}
 	        	//peer is asking if they can request a piece
 	        	else if(command.equals("INTERESTED")) {
+	        		//set interested variable
+	        		neighbor.interested_in_us = true;
 	        		//choose whether to unchoke or choke
-	        		//message = "UNCHOKE";
-	        		//message = "CHOKE"
+	        		//for now, just always unchoke
+	        		node.unchoke(neighbor,arg);
 	        	}
-	        	DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
-		        Debug.print(message);
-		        outToClient.write(message.getBytes("US-ASCII"));
+	        	//peer unchoked me
+	        	else if(command.equals("UNCHOKED")) {
+	        		neighbor.unchoked_to_them = false;
+	        	}
+	        	//peer is requesting specific piece
+	        	else if(command.equals("REQUEST")) {
+	        		//get piece number
+	        		int index = Integer.parseInt(st.nextToken());
+	        		//create separate thread for piece communication?
+	        	}
+	        	else if(command.equals("SEND")) {
+	        		//get piece number
+	        		int index = Integer.parseInt(st.nextToken());
+	        		DataInputStream dis = new DataInputStream(connSocket.getInputStream());
+	        		//block waiting for piece
+	        		//we will have our own thread?
+	        		BitMapContainer bmc = node.getBitMapContainer(arg);
+	        		byte[] piece = new byte[bmc.getPieceLength(index)];
+	        		dis.readFully(piece);
+	        		bmc.addPiece(piece,index);
+	        	}
+
+	        	if(!message.equals("")) {
+		        	Socket sendSocket = new Socket(connSocket.getInetAddress(),port);
+		        	DataOutputStream outToClient = new DataOutputStream(sendSocket.getOutputStream());
+		        	Debug.print("Sending...\n");
+			        Debug.print(message);
+			        outToClient.write(message.getBytes("US-ASCII"));
+			        sendSocket.close();
+	        	}
+
+	        	connSocket.close();
 
 			} catch (Exception e) {
 				e.printStackTrace();
