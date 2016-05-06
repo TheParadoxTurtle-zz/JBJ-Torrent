@@ -6,13 +6,14 @@ import java.io.*;
 public class BitMapContainer {
     public static final int pieceLength = 256;
     public boolean[] bitmap;
+    public int numPieces = 0;
     public byte[][] data;
     public long size;
     public int final_piece_size;
 
     public BitMapContainer(long size) {
-    	this.size = size;
-    	int n = (int) (size / pieceLength) + 1;
+        this.size = size;
+        int n = (int) (size / pieceLength) + 1;
         data = new byte[n][pieceLength];
         bitmap = new boolean[n];
         final_piece_size = (int) (size % pieceLength);
@@ -35,7 +36,17 @@ public class BitMapContainer {
 
         bitmap[index] = true;
         data[index] = piece;
+        numPieces++;
         return true;
+    }
+
+    public boolean isFileCompleted() {
+        if(numPieces == bitmap.length) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     
     // makes data from file
@@ -54,24 +65,32 @@ public class BitMapContainer {
         for(int i = 0; i < length; i++)
             bitmap[i] = true;
     }
+
+    // makes file from data
+    public void makeFile(String fileName) throws IOException {
+        FileOutputStream fos = new FileOutputStream(fileName);
+        for(int i = 0; i < data.length; i++) {
+            fos.write(data[i]);
+        }
+    }
     
     public byte[] getData(int index) {
-    	if (index >= data.length || index < 0) {
-    		return null;
-    	}
-    	return data[index];
+        if (index >= data.length || index < 0) {
+            return null;
+        }
+        return data[index];
     }
     
     public int getPieceLength(int index) {
-    	if (index >= data.length || index < 0) {
-    		return -1;
-    	}
-    	else if (index != data.length - 1) {
-    		return pieceLength;
-    	}
-    	else {
-    		return final_piece_size;
-    	}
+        if (index >= data.length || index < 0) {
+            return -1;
+        }
+        else if (index != data.length - 1) {
+            return pieceLength;
+        }
+        else {
+            return final_piece_size;
+        }
     }
 
     public static boolean[] bitmapFromString(String s) {
