@@ -328,7 +328,8 @@ public class ClientNode implements Node {
 			Socket connSocket = new Socket(nid.ip, nid.port);
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
-			String message = createMessage("SEND", fileName, client_port, index);
+			// String message = createMessage("SEND", fileName, client_port, index);
+            String message = createHeader("SEND", fileName, client_port, index); 
 			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
@@ -499,6 +500,10 @@ public class ClientNode implements Node {
 	
 	private String createMessageWithBitMap(String action, String fileName, int port, boolean[] bitmap) {
 		return action + " " + fileName + " " + port + "\r\n" + BitMapContainer.stringFromBitmap(bitmap) + "\r\n\r\n";
+	}
+
+	private String createHeader(String action, String fileName, int port, int index) {
+		return action + " " + fileName + " " + port + " " + index + "\r\n";
 	}
 	
 	public BitMapContainer getBitMapContainer(String fileName) {
