@@ -58,7 +58,7 @@ public class ClientListeningThread implements Runnable {
 
 	        		//send own bitmap
 	        		message = "CONNECTED " + arg + " " + port + "\r\n";
-	        		message = BitMapContainer.stringFromBitmap(node.getBitMap(arg));
+	        		message += BitMapContainer.stringFromBitmap(node.getBitMap(arg));
 	        		message += "\r\n\r\n";
 	        	}
 	        	//neighbor 
@@ -95,6 +95,7 @@ public class ClientListeningThread implements Runnable {
 	        		//get piece number
 	        		int index = Integer.parseInt(st.nextToken());
 	        		//create separate thread for piece communication?
+	        		node.send(neighbor,arg,index);
 	        	}
 	        	else if(command.equals("SEND")) {
 	        		//get piece number
