@@ -66,7 +66,7 @@ public class ClientNode implements Node {
 					continue;
 				}
 				
-				if (neighbor.unchoked_to_us == false) {
+				if (!neighbor.can_send_to_us) {
 					interested(neighbor, fileName);
 				}
 				else {
@@ -270,7 +270,7 @@ public class ClientNode implements Node {
 			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
-			neighbor.unchoked_to_them = true;	
+			neighbor.can_request_from_us = true;	
 
 			connSocket.close();
 		}
@@ -289,7 +289,7 @@ public class ClientNode implements Node {
 			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
-			neighbor.unchoked_to_them = false;	
+			neighbor.can_request_from_us = false;	
 
 			connSocket.close();
 		}
