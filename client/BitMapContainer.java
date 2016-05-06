@@ -7,10 +7,15 @@ public class BitMapContainer {
     public static final int pieceLength = 256;
     public boolean[] bitmap;
     public byte[][] data;
+    public long size;
+    public int final_piece_size;
 
-    public BitMapContainer(int length) {
-        data = new byte[length][pieceLength];
-        bitmap = new boolean[length];
+    public BitMapContainer(long size) {
+    	this.size = size;
+    	int n = (int) (size / pieceLength) + 1;
+        data = new byte[n][pieceLength];
+        bitmap = new boolean[n];
+        final_piece_size = (int) (size % pieceLength);
     }
     
     public BitMapContainer(String fileName) throws IOException {
@@ -37,7 +42,9 @@ public class BitMapContainer {
     public void makeData(String fileName) throws IOException {
         FileInputStream in = new FileInputStream(fileName);
         File f = new File(fileName);
-        int length = (int) Math.ceil(f.length()/((float)pieceLength));
+        size = f.length();
+        final_piece_size = (int) size % pieceLength;
+        int length = (int) Math.ceil(size/((float)pieceLength));
         data = new byte[length][pieceLength];
         for(int i = 0; i < length; i++) {
             in.read(data[i]);
@@ -46,6 +53,25 @@ public class BitMapContainer {
         bitmap = new boolean[length];
         for(int i = 0; i < length; i++)
             bitmap[i] = true;
+    }
+    
+    public byte[] getData(int index) {
+    	if (index >= data.length || index < 0) {
+    		return null;
+    	}
+    	return data[index];
+    }
+    
+    public int getPieceLength(int index) {
+    	if (index >= data.length || index < 0) {
+    		return -1;
+    	}
+    	else if (index != data.length - 1) {
+    		return data.length;
+    	}
+    	else {
+    		return final_piece_size;
+    	}
     }
 
     public static boolean[] bitmapFromString(String s) {

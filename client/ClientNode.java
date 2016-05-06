@@ -57,13 +57,13 @@ public class ClientNode implements Node {
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			
 			BitMapContainer bmc = new BitMapContainer(fileName);
-			int length = bmc.bitmap.length;
+			long size = bmc.size;
 			torrents.put(fileName, bmc);
 			
 			ArrayList<Neighbor> neighbors = new ArrayList<Neighbor>();
 			neighbor_maps.put(fileName, neighbors);
 			
-			String message = createMessage("SEED", fileName, client_port, length);
+			String message = createMessage("SEED", fileName, client_port, size);
 			//String message = "SEED " + fileName + " " + client_port;
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
@@ -95,8 +95,8 @@ public class ClientNode implements Node {
         		connSocket.close();
         		return false;
         	}
-			int bitmap_length = Integer.parseInt(line);
-			BitMapContainer bmc = new BitMapContainer(bitmap_length);
+			long size = Long.parseLong(line);
+			BitMapContainer bmc = new BitMapContainer(size);
 			torrents.put(fileName, bmc);
 			line = br.readLine();
 			
@@ -137,7 +137,7 @@ public class ClientNode implements Node {
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			
-			// Timeout Event
+			/*// Timeout Event
 	        iCallback callback = new ConnectCallback(connSocket, this,
                                                  neighbor, fileName);
 	        
@@ -156,7 +156,7 @@ public class ClientNode implements Node {
         	if (connSocket.isClosed()) {
         		return;
         	}
-	        line = br.readLine();
+	        line = br.readLine();*/
 			
 			connSocket.close();
 		}
@@ -184,34 +184,119 @@ public class ClientNode implements Node {
 		}
 	}
 
-	@Override
 	public void interested(Neighbor neighbor, String fileName) {
-		// TODO Auto-generated method stub
-		
+		try {
+            NodeID nid = neighbor.nodeid;
+			Socket connSocket = new Socket(nid.ip, nid.port);
+			// The message to be sent
+			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
+			String message = createMessage("INTERESTED", fileName, client_port);
+			Debug.print(message);
+			outToClient.write(message.getBytes("US-ASCII"));
+			
+			neighbor.interested_in_them = true;
+			
+			/*// Timeout Event
+	        iCallback callback = new ConnectCallback(connSocket, this,
+                                                 neighbor, fileName);
+	        
+	        TimeOutEvent event = new TimeOutEvent(callback);
+	        timer.schedule(event, 5000);
+			
+			InputStream is = connSocket.getInputStream();
+			BufferedReader br = new BufferedReader (new InputStreamReader(is, "US-ASCII"));
+			String line = br.readLine();
+            //callback.stop();
+			
+			Debug.print(line);
+			if (line.equals("UNCHOKED")) {
+				neighbor.unchoked_to_us = true;
+			}
+			else if (line.equals("CHOKED")) {
+				neighbor.unchoked_to_us = false;
+			}*/
+			
+			connSocket.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	@Override
+	
 	public void unchoke(Neighbor neighbor, String fileName) {
-		// TODO Auto-generated method stub
-		
+		try {
+            NodeID nid = neighbor.nodeid;
+			Socket connSocket = new Socket(nid.ip, nid.port);
+			// The message to be sent
+			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
+			String message = createMessage("UNCHOKE", fileName, client_port);
+			Debug.print(message);
+			outToClient.write(message.getBytes("US-ASCII"));
+			neighbor.unchoked_to_them = true;	
+
+			connSocket.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	@Override
 	public void request(Neighbor neighbor, String fileName, int index) {
-		// TODO Auto-generated method stub
-		
+		try {
+            NodeID nid = neighbor.nodeid;
+			Socket connSocket = new Socket(nid.ip, nid.port);
+			// The message to be sent
+			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
+			String message = createMessage("REQUEST", fileName, client_port, index);
+			Debug.print(message);
+			outToClient.write(message.getBytes("US-ASCII"));
+			
+			neighbor.interested_in_them = true;
+			
+			connSocket.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	@Override
+	
 	public void send(Neighbor neighbor, String fileName, int index) {
-		// TODO Auto-generated method stub
+		try {
+            NodeID nid = neighbor.nodeid;
+			Socket connSocket = new Socket(nid.ip, nid.port);
+			// The message to be sent
+			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
+			String message = createMessage("SEND", fileName, client_port, index);
+			Debug.print(message);
+			outToClient.write(message.getBytes("US-ASCII"));
+			outToClient.write(torrents.get(fileName).getData(index));
+			
+			connSocket.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
 
-	@Override
+	
 	public void cancel(Neighbor neighbor, String fileName, int index) {
-		// TODO Auto-generated method stub
-		
+		try {
+            NodeID nid = neighbor.nodeid;
+			Socket connSocket = new Socket(nid.ip, nid.port);
+			// The message to be sent
+			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
+			String message = createMessage("CANCEL", fileName, client_port, index);
+			Debug.print(message);
+			outToClient.write(message.getBytes("US-ASCII"));
+			
+			connSocket.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void execute(ClientNode client) {
@@ -232,7 +317,7 @@ public class ClientNode implements Node {
 			else if (command.equals("getNeighbors")) {
 				client.getNeighbors(st.nextToken());
 			}
-			else if (command.equals("connect")) { // connect address port fileName
+			else if (command.equals("connect") || command.equals("interested") || command.equals("unchoke")) { // connect address port fileName
 				try {
 					InetAddress address = InetAddress.getByName(st.nextToken());
 					int port = Integer.parseInt(st.nextToken());
@@ -247,14 +332,22 @@ public class ClientNode implements Node {
 						System.out.println("Neighbor invalid");
 						continue;
 					}
+					if (command.equals("connect")) {
+						client.connect(neighbor, fileName);
+					}
+					else if (command.equals("interested")) {
+						client.interested(neighbor, fileName);
+					}
+					else {
+						client.unchoke(neighbor, fileName);
+					}
 					
-					client.connect(neighbor, fileName);
 				}
 				catch (Exception e) {
 					System.out.println("Invalid command");
 				}
 			}
-			else if (command.equals("have")) { // have address port filename index
+			else if (command.equals("have") || command.equals("request") || command.equals("send") || command.equals("cancel")) { // have address port filename index
 				try {
 					InetAddress address = InetAddress.getByName(st.nextToken());
 					int port = Integer.parseInt(st.nextToken());
@@ -271,7 +364,19 @@ public class ClientNode implements Node {
 						continue;
 					}
 					
-					client.have(neighbor, fileName, index);
+					if (command.equals("have")) {
+						client.have(neighbor, fileName, index);
+					}
+					else if (command.equals("request")) {
+						client.send(neighbor, fileName, index);
+					}
+					else if (command.equals("send")) {
+						client.send(neighbor, fileName, index);
+					}
+					else {
+						client.cancel(neighbor, fileName, index);
+					}
+
 				}
 				catch (Exception e) {
 					System.out.println("Invalid command");
@@ -300,16 +405,16 @@ public class ClientNode implements Node {
 		return neighbor;
 	}
 	
+	private String createMessage(String action, String fileName, int port, long index) {
+		return action + " " + fileName + " " + port + " " + index + "\r\n\r\n";
+	}
+	
 	private String createMessage(String action, String fileName, int port, int index) {
 		return action + " " + fileName + " " + port + " " + index + "\r\n\r\n";
 	}
 	
 	private String createMessage(String action, String fileName, int port) {
 		return action + " " + fileName + " " + port + "\r\n\r\n";
-	}
-	
-	private String createMessage(String action, String fileName) {
-		return action + " " + fileName + "\r\n\r\n";
 	}
 	
 	private String createMessageWithBitMap(String action, String fileName, int port, boolean[] bitmap) {
