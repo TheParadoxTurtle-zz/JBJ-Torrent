@@ -31,6 +31,7 @@ public class ClientListeningThread implements Runnable {
 				//handles peer to peer functions
 				BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream(), Constants.STR_ENCODING));
 	            String line = inFromClient.readLine();
+	            Debug.print("Receiving...");
 	            Debug.print(line);
 	                
                 StringTokenizer st = new StringTokenizer(line);
@@ -114,7 +115,7 @@ public class ClientListeningThread implements Runnable {
 	        	if(!message.equals("")) {
 		        	Socket sendSocket = new Socket(connSocket.getInetAddress(),port);
 		        	DataOutputStream outToClient = new DataOutputStream(sendSocket.getOutputStream());
-		        	Debug.print("Sending...\n");
+		        	Debug.print("Sending...");
 			        Debug.print(message);
 			        outToClient.write(message.getBytes("US-ASCII"));
 			        sendSocket.close();
