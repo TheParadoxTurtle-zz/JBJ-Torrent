@@ -264,6 +264,8 @@ public class ClientNode implements Node {
 	
 	public void send(Neighbor neighbor, String fileName, int index) {
 		try {
+			byte[] data = torrents.get(fileName).getData(index);
+			
             NodeID nid = neighbor.nodeid;
 			Socket connSocket = new Socket(nid.ip, nid.port);
 			// The message to be sent
@@ -271,7 +273,7 @@ public class ClientNode implements Node {
 			String message = createMessage("SEND", fileName, client_port, index);
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
-			outToClient.write(torrents.get(fileName).getData(index));
+			outToClient.write(data);
 			
 			connSocket.close();
 		}
@@ -368,7 +370,7 @@ public class ClientNode implements Node {
 						client.have(neighbor, fileName, index);
 					}
 					else if (command.equals("request")) {
-						client.send(neighbor, fileName, index);
+						client.request(neighbor, fileName, index);
 					}
 					else if (command.equals("send")) {
 						client.send(neighbor, fileName, index);
