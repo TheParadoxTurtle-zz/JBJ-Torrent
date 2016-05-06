@@ -67,7 +67,7 @@ public class BitMapContainer {
     		return -1;
     	}
     	else if (index != data.length - 1) {
-    		return data.length;
+    		return pieceLength;
     	}
     	else {
     		return final_piece_size;

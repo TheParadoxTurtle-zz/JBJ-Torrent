@@ -104,8 +104,10 @@ public class ClientListeningThread implements Runnable {
 	        		//block waiting for piece
 	        		//we will have our own thread?
 	        		BitMapContainer bmc = node.getBitMapContainer(arg);
-	        		byte[] piece = new byte[bmc.getPieceLength(index)];
-	        		dis.readFully(piece);
+	        		int pl = bmc.getPieceLength(index);
+	        		byte[] piece = new byte[pl];
+	        		Debug.print(pl);
+	        		dis.readFully(piece,0,pl);
 	        		bmc.addPiece(piece,index);
 	        	}
 
