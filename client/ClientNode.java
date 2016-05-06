@@ -65,6 +65,7 @@ public class ClientNode implements Node {
 			
 			String message = createMessage("SEED", fileName, client_port, size);
 			//String message = "SEED " + fileName + " " + client_port;
+			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 		
@@ -83,6 +84,7 @@ public class ClientNode implements Node {
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			String message = createMessage("GET", fileName, client_port);
+			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			
@@ -134,6 +136,7 @@ public class ClientNode implements Node {
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			String message = createMessageWithBitMap("CONNECT", fileName, client_port, torrents.get(fileName).bitmap);
+			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			
@@ -174,6 +177,7 @@ public class ClientNode implements Node {
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			String message = createMessage("HAVE", fileName, client_port, index);
+			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 
@@ -191,6 +195,7 @@ public class ClientNode implements Node {
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			String message = createMessage("INTERESTED", fileName, client_port);
+			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			
@@ -231,6 +236,7 @@ public class ClientNode implements Node {
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			String message = createMessage("UNCHOKE", fileName, client_port);
+			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			neighbor.unchoked_to_them = true;	
@@ -249,6 +255,7 @@ public class ClientNode implements Node {
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			String message = createMessage("REQUEST", fileName, client_port, index);
+			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			
@@ -271,6 +278,7 @@ public class ClientNode implements Node {
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			String message = createMessage("SEND", fileName, client_port, index);
+			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			outToClient.write(data);
@@ -291,6 +299,7 @@ public class ClientNode implements Node {
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			String message = createMessage("CANCEL", fileName, client_port, index);
+			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
 			
