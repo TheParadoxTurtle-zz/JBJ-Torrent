@@ -29,7 +29,8 @@ public class ClientListeningThread implements Runnable {
 			try {
 				Socket connSocket = welcomeSocket.accept();
 				//handles peer to peer functions
-				BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream(), Constants.STR_ENCODING));
+				//BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connSocket.getInputStream(), Constants.STR_ENCODING));
+				DataInputStream inFromClient = new DataInputStream(connSocket.getInputStream());
 	            String line = inFromClient.readLine();
 	            Debug.print("Receiving...");
 	            Debug.print(line);
@@ -101,20 +102,21 @@ public class ClientListeningThread implements Runnable {
 	        		    //get piece number
 	        		    int index = Integer.parseInt(st.nextToken());
 	        		    //create separate thread for piece communication?
-	        		    node.send(neighbor,arg,index);
+	        		    if (index >= 0 && index < node.getBitMap(arg).length) {
+	        		    	node.send(neighbor,arg,index);
+	        		    }
                     }
 	        	}
 	        	else if(command.equals("SEND")) {
 	        		//get piece number
 	        		int index = Integer.parseInt(st.nextToken());
-	        		DataInputStream dis = new DataInputStream(connSocket.getInputStream());
+	        		//DataInputStream dis = new DataInputStream(connSocket.getInputStream());
 	        		//block waiting for piece
 	        		//we will have our own thread?
 	        		BitMapContainer bmc = node.getBitMapContainer(arg);
 	        		int pl = bmc.getPieceLength(index);
 	        		byte[] piece = new byte[pl];
-	        		Debug.print(pl);
-	        		dis.readFully(piece);
+	        		inFromClient.readFully(piece);
 	        		bmc.addPiece(piece,index);
 	        	}
 

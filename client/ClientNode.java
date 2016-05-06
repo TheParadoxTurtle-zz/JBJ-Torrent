@@ -59,7 +59,7 @@ public class ClientNode implements Node {
 		
 		BitMapContainer bmc = torrents.get(fileName);
 		while (!bmc.isFileCompleted()) {
-			//Debug.print(neighbors.size());
+			Debug.print(bmc.numPieces);
 			for (Neighbor neighbor : neighbors) {
 				
 				if (neighbor.bitmap == null) {
@@ -70,9 +70,12 @@ public class ClientNode implements Node {
 					interested(neighbor, fileName);
 				}
 				else {
+					int k = bmc.numPieces;
 					request(neighbor, fileName, bmc.numPieces);
+					while (bmc.numPieces <= k) {}
 				}
 			}
+			Thread.sleep(15);
 		}
 		Debug.print("File completed");
 		
@@ -328,7 +331,7 @@ public class ClientNode implements Node {
 			Socket connSocket = new Socket(nid.ip, nid.port);
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
-			String message = createMessage("SEND", fileName, client_port, index);
+			String message = createMessageSingle("SEND", fileName, client_port, index);
 			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
@@ -469,8 +472,8 @@ public class ClientNode implements Node {
 	public Neighbor findNeighbor(NodeID nodeid, String fileName) {
 		ArrayList<Neighbor> neighbors = neighbor_maps.get(fileName);
 		for (Neighbor neighbor : neighbors) {
-			Debug.print(neighbor.nodeid.toString());
-			Debug.print(nodeid.toString());
+			//Debug.print(neighbor.nodeid.toString());
+			//Debug.print(nodeid.toString());
 			if (neighbor.nodeid.equals(nodeid)) {
 				return neighbor;
 			}
@@ -483,6 +486,10 @@ public class ClientNode implements Node {
 		Neighbor neighbor = new Neighbor(nid);
 		neighbors.add(neighbor);
 		return neighbor;
+	}
+	
+	private String createMessageSingle(String action, String fileName, int port, long index) {
+		return action + " " + fileName + " " + port + " " + index + "\r\n";
 	}
 	
 	private String createMessage(String action, String fileName, int port, long index) {

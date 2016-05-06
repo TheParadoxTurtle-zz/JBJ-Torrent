@@ -29,13 +29,23 @@ public class BitMapContainer {
             Debug.print("Index already filled");
             return false;
         }
-        if(piece.length != pieceLength) {
+        /*if(piece.length != pieceLength) {
             Debug.print("Invalid piece length");
             return false;
-        }
-
+        }*/
+        
         bitmap[index] = true;
-        data[index] = piece;
+        if (index != bitmap.length - 1) {
+        	data[index] = piece;
+        }
+        else
+        {
+        	data[index] = new byte[pieceLength];
+        	for (int i = 0; i < piece.length; i++) {
+        		data[index][i] = piece[i];
+        	}
+        }
+        
         numPieces++;
         return true;
     }
