@@ -89,18 +89,20 @@ public class ClientListeningThread implements Runnable {
 	        	}
 	        	//peer unchoked me
 	        	else if(command.equals("UNCHOKE")) {
-	        		neighbor.unchoked_to_us = true;
+	        		neighbor.can_send_to_us = true;
 	        	}
 	        	//peer choked me
 	        	else if(command.equals("CHOKE")) {
-	        		neighbor.unchoked_to_us = false;
+	        		neighbor.can_send_to_us = false;
 	        	}
 	        	//peer is requesting specific piece
 	        	else if(command.equals("REQUEST")) {
-	        		//get piece number
-	        		int index = Integer.parseInt(st.nextToken());
-	        		//create separate thread for piece communication?
-	        		node.send(neighbor,arg,index);
+                    if(neighbor.can_request_from_us) {
+	        		    //get piece number
+	        		    int index = Integer.parseInt(st.nextToken());
+	        		    //create separate thread for piece communication?
+	        		    node.send(neighbor,arg,index);
+                    }
 	        	}
 	        	else if(command.equals("SEND")) {
 	        		//get piece number
