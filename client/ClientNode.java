@@ -49,6 +49,35 @@ public class ClientNode implements Node {
 		execute(client);
 	}
 	
+	public void basicSearchStrategy(String fileName) throws Exception {
+		getNeighbors(fileName);
+		ArrayList<Neighbor> neighbors = neighbor_maps.get(fileName);
+		for (Neighbor neighbor : neighbors) {
+			connect(neighbor, fileName);
+		}
+		
+		
+		BitMapContainer bmc = torrents.get(fileName);
+		while (!bmc.isFileCompleted()) {
+			for (Neighbor neighbor : neighbors) {		
+				if (neighbor.bitmap == null) {
+					continue;
+				}
+				
+				if (neighbor.unchoked_to_us == false) {
+					interested(neighbor, fileName);
+				}
+				else {
+					request(neighbor, fileName, bmc.numPieces);
+				}
+			}
+		}
+		Debug.print("File completed");
+		
+		bmc.makeFile("test_file.txt");
+		
+	}
+	
 	//seeds to server
 	public void seed(String fileName) {	
 		try {
@@ -341,7 +370,10 @@ public class ClientNode implements Node {
 				continue;
 			}
 			
-			if (command.equals("seed")) {
+			if (command.equals("basic")) {
+				client.basicSearchStrategy(st.nextToken());
+			}
+			else if (command.equals("seed")) {
 				client.seed(st.nextToken());
 			}
 			else if (command.equals("getNeighbors")) {
