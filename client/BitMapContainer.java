@@ -64,13 +64,20 @@ public class BitMapContainer {
         bitmap = new boolean[length];
         for(int i = 0; i < length; i++)
             bitmap[i] = true;
+
+        numPieces = length;
     }
 
     // makes file from data
     public void makeFile(String fileName) throws IOException {
         FileOutputStream fos = new FileOutputStream(fileName);
         for(int i = 0; i < data.length; i++) {
-            fos.write(data[i]);
+            if(i == data.length - 1) {
+                fos.write(data[i],0,final_piece_size);
+            }
+            else {
+                fos.write(data[i]);                
+            }
         }
     }
     

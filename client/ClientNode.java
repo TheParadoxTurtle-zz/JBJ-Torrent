@@ -329,7 +329,7 @@ public class ClientNode implements Node {
 		}
 	}
 	
-	public static void execute(ClientNode client) {
+	public static void execute(ClientNode client) throws Exception {
 		while (true) {
 			Scanner scanner = new Scanner(System.in);
 			String line = scanner.nextLine();
@@ -346,6 +346,17 @@ public class ClientNode implements Node {
 			}
 			else if (command.equals("getNeighbors")) {
 				client.getNeighbors(st.nextToken());
+			}
+			else if(command.equals("makeFile")) {
+				//make file from pieces
+				String fileName = st.nextToken();
+				BitMapContainer bmc = client.getBitMapContainer(fileName);
+				if(bmc.isFileCompleted()) {
+					bmc.makeFile("test_file.txt");
+				}
+				else {
+					Debug.print("File not completed...");
+				}
 			}
 			else if (command.equals("connect") || command.equals("interested") || command.equals("unchoke") || command.equals("choke")) { // connect address port fileName
 				try {
