@@ -247,6 +247,26 @@ public class ClientNode implements Node {
 			e.printStackTrace();
 		}
 	}
+	
+	public void choke(Neighbor neighbor, String fileName) {
+		try {
+            NodeID nid = neighbor.nodeid;
+			Socket connSocket = new Socket(nid.ip, nid.port);
+			// The message to be sent
+			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
+			String message = createMessage("CHOKE", fileName, client_port);
+			Debug.print("Sending...");
+			Debug.print(message);
+			outToClient.write(message.getBytes("US-ASCII"));
+			neighbor.unchoked_to_them = false;	
+
+			connSocket.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 
 	public void request(Neighbor neighbor, String fileName, int index) {
 		try {
@@ -290,7 +310,6 @@ public class ClientNode implements Node {
 		}
 		
 	}
-
 	
 	public void cancel(Neighbor neighbor, String fileName, int index) {
 		try {
@@ -328,7 +347,7 @@ public class ClientNode implements Node {
 			else if (command.equals("getNeighbors")) {
 				client.getNeighbors(st.nextToken());
 			}
-			else if (command.equals("connect") || command.equals("interested") || command.equals("unchoke")) { // connect address port fileName
+			else if (command.equals("connect") || command.equals("interested") || command.equals("unchoke") || command.equals("choke")) { // connect address port fileName
 				try {
 					InetAddress address = InetAddress.getByName(st.nextToken());
 					int port = Integer.parseInt(st.nextToken());
@@ -349,8 +368,11 @@ public class ClientNode implements Node {
 					else if (command.equals("interested")) {
 						client.interested(neighbor, fileName);
 					}
-					else {
+					else if (command.equals("unchoke")) {
 						client.unchoke(neighbor, fileName);
+					}
+					else {
+						client.choke(neighbor, fileName);
 					}
 					
 				}

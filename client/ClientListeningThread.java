@@ -88,8 +88,12 @@ public class ClientListeningThread implements Runnable {
 	        		node.unchoke(neighbor,arg);
 	        	}
 	        	//peer unchoked me
-	        	else if(command.equals("UNCHOKED")) {
-	        		neighbor.unchoked_to_them = false;
+	        	else if(command.equals("UNCHOKE")) {
+	        		neighbor.unchoked_to_us = true;
+	        	}
+	        	//peer choked me
+	        	else if(command.equals("CHOKE")) {
+	        		neighbor.unchoked_to_us = false;
 	        	}
 	        	//peer is requesting specific piece
 	        	else if(command.equals("REQUEST")) {
