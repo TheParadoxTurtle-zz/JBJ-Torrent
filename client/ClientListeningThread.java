@@ -108,7 +108,7 @@ public class ClientListeningThread implements Runnable {
 	        		int pl = bmc.getPieceLength(index);
 	        		byte[] piece = new byte[pl];
 	        		Debug.print(pl);
-	        		dis.readFully(piece,0,pl);
+	        		dis.readFully(piece);
 	        		bmc.addPiece(piece,index);
 	        	}
 
