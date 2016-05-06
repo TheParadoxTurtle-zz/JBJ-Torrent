@@ -40,7 +40,7 @@ public class ClientListeningThread implements Runnable {
 
 				int port = Integer.parseInt(st.nextToken());
 
-				NodeID nid = new NodeID(connSocket.getInetAddress(),port);
+				NodeID nid = new NodeID(connSocket.getInetAddress(), port);
 				Neighbor neighbor = node.findNeighbor(nid,arg);
 
 		        String message = "";
@@ -58,7 +58,7 @@ public class ClientListeningThread implements Runnable {
 	        		neighbor.bitmap = BitMapContainer.bitmapFromString(line);
 
 	        		//send own bitmap
-	        		message = "CONNECTED " + arg + " " + port + "\r\n";
+	        		message = "CONNECTED " + arg + " " + node.client_port + "\r\n";
 	        		message += BitMapContainer.stringFromBitmap(node.getBitMap(arg));
 	        		message += "\r\n\r\n";
 	        	}
@@ -66,7 +66,7 @@ public class ClientListeningThread implements Runnable {
 	        	else if(command.equals("CONNECTED")) {
 	        		//get neighbor bitmap
 	        		line = inFromClient.readLine();
-
+	        		Debug.print(line);
 	        		//update neighbor bitmaps
 	        		if(neighbor == null) {
 	        			neighbor = node.addNeighbor(nid,arg);

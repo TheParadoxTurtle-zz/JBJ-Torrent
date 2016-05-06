@@ -14,9 +14,9 @@ import java.util.Timer;
 import lib.Debug;
 
 public class ClientNode implements Node {
-	private InetAddress server_ip;
-	private int server_port;
-	private int client_port;
+	public InetAddress server_ip;
+	public int server_port;
+	public int client_port;
 	private HashMap<String, ArrayList<Neighbor>> neighbor_maps;
 	private HashMap<String, BitMapContainer> torrents;
 	
@@ -59,7 +59,9 @@ public class ClientNode implements Node {
 		
 		BitMapContainer bmc = torrents.get(fileName);
 		while (!bmc.isFileCompleted()) {
-			for (Neighbor neighbor : neighbors) {		
+			//Debug.print(neighbors.size());
+			for (Neighbor neighbor : neighbors) {
+				
 				if (neighbor.bitmap == null) {
 					continue;
 				}
@@ -467,6 +469,8 @@ public class ClientNode implements Node {
 	public Neighbor findNeighbor(NodeID nodeid, String fileName) {
 		ArrayList<Neighbor> neighbors = neighbor_maps.get(fileName);
 		for (Neighbor neighbor : neighbors) {
+			Debug.print(neighbor.nodeid.toString());
+			Debug.print(nodeid.toString());
 			if (neighbor.nodeid.equals(nodeid)) {
 				return neighbor;
 			}
