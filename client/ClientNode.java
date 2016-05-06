@@ -332,7 +332,7 @@ public class ClientNode implements Node {
 			// The message to be sent
 			DataOutputStream outToClient = new DataOutputStream(connSocket.getOutputStream());
 			// String message = createMessage("SEND", fileName, client_port, index);
-            String message = createHeader("SEND", fileName, client_port, index); 
+            String message = createMessageSingle("SEND", fileName, client_port, index); 
 			Debug.print("Sending...");
 			Debug.print(message);
 			outToClient.write(message.getBytes("US-ASCII"));
