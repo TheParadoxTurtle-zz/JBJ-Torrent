@@ -78,8 +78,9 @@ public class ClientNode implements Node {
 			Thread.sleep(15);
 		}
 		Debug.print("File completed");
+
 		
-		bmc.makeFile("test_file.txt");
+		bmc.makeFile("jbj_torrent_" + fileName);
 		
 	}
 	
