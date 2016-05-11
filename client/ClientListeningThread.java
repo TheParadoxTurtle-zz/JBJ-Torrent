@@ -108,6 +108,9 @@ public class ClientListeningThread implements Runnable {
 	        		    int index = Integer.parseInt(st.nextToken());
 	        		    //create separate thread for piece communication?
 	        		    if (index >= 0 && index < node.getBitMap(arg).length) {
+	        		    	if(node.type == ClientNode.Type.SEEDER) {
+	        		    		Thread.sleep(20);
+	        		    	}
 	        		    	node.send(neighbor,arg,index);
 	        		    }
                     }

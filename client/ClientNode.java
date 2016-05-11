@@ -20,13 +20,13 @@ public class ClientNode implements Node {
 	private HashMap<String, ArrayList<Neighbor>> neighbor_maps;
 	private HashMap<String, BitMapContainer> torrents;
 	
-	private enum Type {
+	public enum Type {
 		LEECHER,
 		SEEDER
 	}
 
 	//default type is leecher
-	private Type type = Type.LEECHER;
+	public Type type = Type.LEECHER;
 
 	private Timer timer;
 	
@@ -71,7 +71,6 @@ public class ClientNode implements Node {
 			connect(neighbor, fileName);
 		}
 		
-		
 		BitMapContainer bmc = torrents.get(fileName);
 		while (!bmc.isFileCompleted()) {
 			Debug.print(bmc.numPieces);
@@ -84,10 +83,11 @@ public class ClientNode implements Node {
 				if (!neighbor.can_send_to_us) {
 					interested(neighbor, fileName);
 				}
-				else {
+				//check if neighbor has piece
+				else if (neighbor.bitmap[bmc.numPieces]) {
 					int k = bmc.numPieces;
 					request(neighbor, fileName, bmc.numPieces);
-					while (bmc.numPieces <= k) {}
+					//while (bmc.numPieces <= k) {}
 				}
 			}
 			Thread.sleep(15);
@@ -465,6 +465,9 @@ public class ClientNode implements Node {
 			
 			if (command.equals("basic")) {
 				client.basicSearchStrategy(st.nextToken());
+			}
+			else if (command.equals("random")) {
+				client.randomSearchStrategy(st.nextToken());
 			}
 			else if (command.equals("seed")) {
 				client.seed(st.nextToken());
