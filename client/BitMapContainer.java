@@ -2,6 +2,7 @@ package client;
 
 import lib.Debug;
 import java.io.*;
+import java.util.Random;
 
 public class BitMapContainer {
     public static final int pieceLength = 256;
@@ -108,6 +109,23 @@ public class BitMapContainer {
         else {
             return final_piece_size;
         }
+    }
+    
+    public int getRandomPiece() {
+    	int pieces_left = bitmap.length - numPieces;
+    	Random random = new Random();
+    	int choice = random.nextInt(pieces_left);
+    	int a = 0;
+    	for (int i = 0; i < bitmap.length; i++) {
+    		if (bitmap[i] == false) {
+    			if (a == choice) {
+    				return i; 
+    			}
+    			a++;
+    		}
+    	}
+    	
+    	return -1;
     }
 
     public static boolean[] bitmapFromString(String s) {
