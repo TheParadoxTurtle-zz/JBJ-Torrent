@@ -223,6 +223,13 @@ public class ClientNode implements Node {
 		}
 	}
 
+	public void sendHaveToAll(String fileName, int index) {
+		ArrayList<Neighbor> neighbors = neighbor_maps.get(fileName);
+		for(Neighbor n : neighbors) {
+			have(n,fileName,index);
+		}
+	}
+
 	public void interested(Neighbor neighbor, String fileName) {
 		try {
             NodeID nid = neighbor.nodeid;

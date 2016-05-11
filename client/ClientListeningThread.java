@@ -117,7 +117,10 @@ public class ClientListeningThread implements Runnable {
 	        		int pl = bmc.getPieceLength(index);
 	        		byte[] piece = new byte[pl];
 	        		inFromClient.readFully(piece);
-	        		bmc.addPiece(piece,index);
+	        		if(bmc.addPiece(piece,index)) {
+	        			//if piece added, send have to all neighbors
+	        			node.sendHaveToAll(arg,index);
+	        		}
 	        	}
 
 	        	if(!message.equals("")) {
