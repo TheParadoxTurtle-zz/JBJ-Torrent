@@ -73,7 +73,6 @@ public class ClientNode implements Node {
 		
 		BitMapContainer bmc = torrents.get(fileName);
 		while (!bmc.isFileCompleted()) {
-			Debug.print(bmc.numPieces);
 			for (Neighbor neighbor : neighbors) {
 				
 				if (neighbor.bitmap == null) {
@@ -107,7 +106,6 @@ public class ClientNode implements Node {
 		
 		BitMapContainer bmc = torrents.get(fileName);
 		while (!bmc.isFileCompleted()) {
-			Debug.print(bmc.numPieces);
             int index = (int)(Math.random()*neighbors.size());
             Neighbor neighbor = neighbors.get(index);
             int piece = bmc.getRandomPiece();

@@ -109,7 +109,7 @@ public class ClientListeningThread implements Runnable {
 	        		    //create separate thread for piece communication?
 	        		    if (index >= 0 && index < node.getBitMap(arg).length) {
 	        		    	if(node.type == ClientNode.Type.SEEDER) {
-	        		    		Thread.sleep(20);
+	        		    		Thread.sleep(200);
 	        		    	}
 	        		    	node.send(neighbor,arg,index);
 	        		    }
