@@ -89,7 +89,7 @@ public class ClientNode implements Node {
 					//while (bmc.numPieces <= k) {}
 				}
 			}
-			Thread.sleep(15);
+			Thread.sleep(200);
 		}
 		Debug.print("File completed");
 
@@ -98,6 +98,7 @@ public class ClientNode implements Node {
 
 	public void randomSearchStrategy(String fileName) throws Exception {
 		getNeighbors(fileName);
+        Debug.print("Neighbors receieved");
 		ArrayList<Neighbor> neighbors = neighbor_maps.get(fileName);
 		for (Neighbor neighbor : neighbors) {
 			connect(neighbor, fileName);
@@ -123,6 +124,7 @@ public class ClientNode implements Node {
             }
             else
                 continue;
+			Thread.sleep(200);
 		}
 		Debug.print("File completed");
 
