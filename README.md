@@ -56,4 +56,4 @@ them if the number of pieces they have that the node needs is at least 3 times
 as many as the number of pieces the node is missing. Otherwise, it will unchoke
 with probability 1/(2n), where n is the number of neighbors.
 
-Each SEEDER node will always unchoke.
+## For more information look at the report
