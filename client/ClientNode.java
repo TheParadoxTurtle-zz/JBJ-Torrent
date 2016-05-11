@@ -79,6 +79,40 @@ public class ClientNode implements Node {
 		}
 		Debug.print("File completed");
 
+		bmc.makeFile("jbj_torrent_" + fileName);
+	}
+
+	public void randomSearchStrategy(String fileName) throws Exception {
+		getNeighbors(fileName);
+		ArrayList<Neighbor> neighbors = neighbor_maps.get(fileName);
+		for (Neighbor neighbor : neighbors) {
+			connect(neighbor, fileName);
+		}
+		
+		
+		BitMapContainer bmc = torrents.get(fileName);
+		while (!bmc.isFileCompleted()) {
+			Debug.print(bmc.numPieces);
+            int index = (int)(Math.random()*neighbors.size());
+            Neighbor neighbor = neighbors.get(index);
+            int piece = bmc.getRandomPiece();
+				
+		    if (neighbor.bitmap == null) {
+		    	continue;
+		    }
+            if(neighbor.bitmap[piece]) {
+		        if (!neighbor.can_send_to_us) {
+		        	interested(neighbor, fileName);
+		        }
+		        else {
+			    	request(neighbor, fileName, piece);
+			    }
+            }
+            else
+                continue;
+		}
+		Debug.print("File completed");
+
 		
 		bmc.makeFile("jbj_torrent_" + fileName);
 		
