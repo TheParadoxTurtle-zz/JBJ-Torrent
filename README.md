@@ -1,5 +1,12 @@
-# JBJ-Torrent (JeffBenJeff-Torrent)
+### https://github.com/TheParadoxTurtle/JBJ-Torrent
+### Group members:
+### Jeffrey Lai, Benjamin Tong, Jefferson Zou
+###
+### JBJ-Torrent (JeffBenJeff-Torrent)
+
 A torrenting network using a single server (TrackerServer) and any number of peers (ClientNode).
+
+# Running the code 
 
 To start the server, use
 
@@ -16,6 +23,18 @@ where (server ip) and (server port) are the ip address and port of the server,
 and (mode) is one of "leecher" or "seeder". 
 A SEEDER is a node that has a complete file.
 A LEECHER is a node that does not have a complete file, or no file at all.
+
+To seed a file, one should start the client (after the server already up) in seeder mode and the type in the command 
+
+seed <filename>
+
+To start torrenting a file, one start the client (after the server is already up and the file has been seeded by at least one person) in leecher mode and type the command
+
+<strategy> <filename>
+
+where <strategy> is one of 'basic' or 'random'
+
+# Design
 
 Each node has a listening thread (see ClientListeningThread) that it uses to
 receive messages from the server and other nodes. Thus, when a node sends a message
