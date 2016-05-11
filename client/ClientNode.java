@@ -20,6 +20,14 @@ public class ClientNode implements Node {
 	private HashMap<String, ArrayList<Neighbor>> neighbor_maps;
 	private HashMap<String, BitMapContainer> torrents;
 	
+	private enum Type {
+		LEECHER,
+		SEEDER
+	}
+
+	//default type is leecher
+	private Type type = Type.LEECHER;
+
 	private Timer timer;
 	
 	public ClientNode(InetAddress server_ip, int server_port, int client_port) {
@@ -35,10 +43,17 @@ public class ClientNode implements Node {
 		InetAddress server_ip = InetAddress.getByName(args[0]);
 		int server_port = Integer.parseInt(args[1]);
 		int client_port = Integer.parseInt(args[2]);
-		//String mode = args[3];
+		String mode = args[3].toLowerCase();
 		
 		ClientNode client = new ClientNode(server_ip, server_port, client_port);
 		
+		//set client mode
+		if(mode.equals("leecher")) {
+			client.type = Type.LEECHER;
+		}
+		else if(mode.equals("seeder")) {
+			client.type = Type.SEEDER;
+		}
 		// Do stuff
 
 		//start listening on specified port
@@ -304,6 +319,36 @@ public class ClientNode implements Node {
 		}
 	}
 
+	public boolean leecherUnchokeStrategy(Neighbor neighbor, String fileName) {
+		BitMapContainer myBMC = torrents.get(fileName);
+		boolean[] myBitmap = myBMC.bitmap;
+		boolean[] theirBitmap = neighbor.bitmap;
+		int tot = 0;
+		for(int i = 0; i < myBitmap.length; i++) {
+			if(!myBitmap[i] && theirBitmap[i]) {
+				tot++;
+			}
+		}
+		if(3*tot >= (myBitmap.length - myBMC.numPieces)) {
+			return true;
+		}
+		//otherwise, optimistic unchoking (advanced)
+		return Math.random() < 0.5/(neighbor_maps.get(fileName).size());
+	}
+
+	public boolean seederUnchokeStrategy(Neighbor neighbor, String fileName) {
+		return true;
+	}
+	
+	public boolean shouldUnchoke(Neighbor neighbor, String fileName) {
+		switch(this.type) {
+			case LEECHER:
+				return leecherUnchokeStrategy(neighbor, fileName);
+			case SEEDER:
+				return seederUnchokeStrategy(neighbor, fileName);
+		}
+		return true;
+	}
 	
 	public void unchoke(Neighbor neighbor, String fileName) {
 		try {
